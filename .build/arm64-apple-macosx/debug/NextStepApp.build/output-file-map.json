@@ -1,0 +1,103 @@
+{
+  "": {
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/primary.swiftdeps"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/App/NextStepApp.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/NextStepApp.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/NextStepApp.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/NextStepApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/NextStepApp.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/NextStepApp.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Models/Block.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/Block.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/Block.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/Block~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/Block.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/Block.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Resources/DesignSystem.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/DesignSystem.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/DesignSystem.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/DesignSystem~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/DesignSystem.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/DesignSystem.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Services/AIService.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIService.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIService.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIService~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIService.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIService.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/ViewModels/CanvasViewModel.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasViewModel.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasViewModel.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasViewModel.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasViewModel.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIHintCard.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIHintCard.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIHintCard.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIHintCard~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIHintCard.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIHintCard.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIPanelView.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIPanelView.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIPanelView.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIPanelView~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIPanelView.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIPanelView.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/CanvasView.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasView.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasView.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasView~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasView.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasView.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/QuestionBlockView.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/QuestionBlockView.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/QuestionBlockView.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/QuestionBlockView~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/QuestionBlockView.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/QuestionBlockView.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/ResultBlockView.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ResultBlockView.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ResultBlockView.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ResultBlockView~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ResultBlockView.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ResultBlockView.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/StepBlockView.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/StepBlockView.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/StepBlockView.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/StepBlockView~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/StepBlockView.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/StepBlockView.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/AddStepButton.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AddStepButton.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AddStepButton.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AddStepButton~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AddStepButton.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AddStepButton.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/PencilKitView.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/PencilKitView.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/PencilKitView.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/PencilKitView~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/PencilKitView.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/PencilKitView.dia"
+  },
+  "/Users/arnav/Code/Nextstepapp/NextStep/Views/ContentView.swift": {
+    "dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ContentView.d",
+    "object": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ContentView.swift.o",
+    "swiftmodule": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ContentView.swiftdeps",
+    "diagnostics": "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ContentView.dia"
+  }
+}

@@ -1,0 +1,14 @@
+/Users/arnav/Code/Nextstepapp/NextStep/App/NextStepApp.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Models/Block.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Resources/DesignSystem.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Services/AIService.swift
+/Users/arnav/Code/Nextstepapp/NextStep/ViewModels/CanvasViewModel.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIHintCard.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIPanelView.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/CanvasView.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/QuestionBlockView.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/ResultBlockView.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/StepBlockView.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/AddStepButton.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/PencilKitView.swift
+/Users/arnav/Code/Nextstepapp/NextStep/Views/ContentView.swift

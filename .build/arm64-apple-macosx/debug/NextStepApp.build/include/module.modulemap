@@ -1,0 +1,3 @@
+module NextStepApp {
+    header "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/include/NextStepApp-Swift.h"
+}

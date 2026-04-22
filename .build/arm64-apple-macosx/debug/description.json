@@ -1,0 +1,426 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.NextStepApp-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/sources",
+      "importPath" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/App/NextStepApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Models/Block.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Resources/DesignSystem.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Services/AIService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/ViewModels/CanvasViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIHintCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIPanelView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/CanvasView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/QuestionBlockView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/ResultBlockView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/StepBlockView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/AddStepButton.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/PencilKitView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/ContentView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "NextStepApp",
+      "moduleOutputPath" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/Modules/NextStepApp.swiftmodule",
+      "objects" : [
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/NextStepApp.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/Block.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/DesignSystem.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIService.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasViewModel.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIHintCard.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIPanelView.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasView.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/QuestionBlockView.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ResultBlockView.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/StepBlockView.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AddStepButton.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/PencilKitView.swift.o",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ContentView.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/include/NextStepApp-Swift.h",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.4.sdk",
+        "-target",
+        "arm64-apple-ios16.0-simulator",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "nextstepapp"
+      ],
+      "outputFileMapPath" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/NextStepApp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/Block.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/DesignSystem.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIHintCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AIPanelView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/CanvasView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/QuestionBlockView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ResultBlockView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/StepBlockView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/AddStepButton.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/PencilKitView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/ContentView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/Modules/NextStepApp.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/arnav/Code/Nextstepapp/NextStep/App/NextStepApp.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Models/Block.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Resources/DesignSystem.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Services/AIService.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/ViewModels/CanvasViewModel.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIHintCard.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIPanelView.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/CanvasView.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/QuestionBlockView.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/ResultBlockView.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/StepBlockView.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/AddStepButton.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/PencilKitView.swift",
+        "/Users/arnav/Code/Nextstepapp/NextStep/Views/ContentView.swift"
+      ],
+      "tempsPath" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "NextStepApp" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "NextStepApp",
+      "-package-name",
+      "nextstepapp",
+      "-c",
+      "/Users/arnav/Code/Nextstepapp/NextStep/App/NextStepApp.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Models/Block.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Resources/DesignSystem.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Services/AIService.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/ViewModels/CanvasViewModel.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIHintCard.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIPanelView.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/CanvasView.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/QuestionBlockView.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/ResultBlockView.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/StepBlockView.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/AddStepButton.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/PencilKitView.swift",
+      "/Users/arnav/Code/Nextstepapp/NextStep/Views/ContentView.swift",
+      "-I",
+      "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/include/NextStepApp-Swift.h",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.4.sdk",
+      "-target",
+      "arm64-apple-ios16.0-simulator",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "nextstepapp",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "NextStepApp" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/App/NextStepApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Models/Block.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Resources/DesignSystem.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Services/AIService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/ViewModels/CanvasViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIHintCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/AIPanel/AIPanelView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/CanvasView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/QuestionBlockView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/ResultBlockView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Canvas/StepBlockView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/AddStepButton.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/Components/PencilKitView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/arnav/Code/Nextstepapp/NextStep/Views/ContentView.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/NextStepApp.build/sources"
+    },
+    "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/arnav/Code/Nextstepapp/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}
