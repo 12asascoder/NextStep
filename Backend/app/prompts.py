@@ -84,29 +84,28 @@ def build_hint_messages(
 
 def build_validate_messages(
     problem: str,
-    step_text: str,
-    previous_steps: Optional[List[str]] = None,
+    steps: List[str],
     difficulty: str = "10th Grade",
     topic: Optional[str] = None,
 ) -> list[dict]:
-    """Return the messages list for a step-validation request."""
+    """Return the messages list for a batch step-validation request."""
     messages: list[dict] = [{"role": "system", "content": SYSTEM_PROMPT}]
 
-    prev = ""
-    if previous_steps:
-        prev = "\n**Previous steps:**\n" + "\n".join(
-            f"  Step {i+1}: {s}" for i, s in enumerate(previous_steps)
-        )
+    steps_text = "\n".join(f"Step {i}: {s}" for i, s in enumerate(steps))
 
     user_prompt = (
-        f"**Problem ({difficulty}{', ' + topic if topic else ''}):**\n{problem}\n"
-        f"{prev}\n\n"
-        f"**Student's latest step:** {step_text}\n\n"
-        "Evaluate this step. Respond in exactly this JSON format:\n"
-        '{"is_correct": true/false, "feedback": "your feedback here"}\n\n'
-        "If the step is correct, give brief positive reinforcement. "
-        "If incorrect, explain what went wrong and hint at the right approach. "
-        "ONLY output the JSON, nothing else."
+        f"**Problem ({difficulty}{', ' + topic if topic else ''}):**\n{problem}\n\n"
+        f"**Student's sequence of steps (OCR Text):**\n{steps_text}\n\n"
+        "Note: The steps were extracted via handwriting OCR and might contain visual "
+        "misreadings (e.g., confusing '5' with 'S', '+' with 't', '2' with 'z', '1' with 'I'). "
+        "Please evaluate the most likely mathematical intent behind the text.\n\n"
+        "Evaluate the sequence of steps. Each step should logically follow from the previous ones. "
+        "Respond in EXACTLY this JSON format, providing an array of results:\n"
+        '[\n'
+        '  {"step_index": 0, "is_correct": true, "feedback": "Good start"},\n'
+        '  {"step_index": 1, "is_correct": false, "feedback": "Check your sign here"}\n'
+        ']\n\n'
+        "ONLY output the JSON array, nothing else."
     )
 
     messages.append({"role": "user", "content": user_prompt})

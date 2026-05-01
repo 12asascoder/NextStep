@@ -20,19 +20,34 @@ struct HintRequestBody: Codable {
     }
 }
 
-struct ValidateStepRequestBody: Codable {
+struct ValidateStepsRequestBody: Codable {
     let problem: String
-    let stepText: String
-    let previousSteps: [String]?
+    let steps: [String]
     let difficulty: String?
     let topic: String?
+}
+
+struct StepValidationResult: Codable {
+    let stepIndex: Int
+    let isCorrect: Bool
+    let feedback: String
 
     enum CodingKeys: String, CodingKey {
-        case problem
-        case stepText = "step_text"
-        case previousSteps = "previous_steps"
-        case difficulty
-        case topic
+        case stepIndex = "step_index"
+        case isCorrect = "is_correct"
+        case feedback
+    }
+}
+
+struct BatchAIResponseBody: Codable {
+    let results: [StepValidationResult]
+    let reasoning: String?
+    let hintType: String
+
+    enum CodingKeys: String, CodingKey {
+        case results
+        case reasoning
+        case hintType = "hint_type"
     }
 }
 
@@ -63,7 +78,8 @@ final class AIService {
 
     // ⚠️ Change this to your Mac's local IP if running on a real device.
     // Use "localhost" for Simulator only.
-    static let baseURL = "http://localhost:8000"
+    static let baseURL = "http://10.3.156.164:8000"
+
 
     private let session: URLSession = {
         let config = URLSessionConfiguration.default
@@ -100,29 +116,27 @@ final class AIService {
         }
     }
 
-    // MARK: - Validate a Solution Step
+    // MARK: - Validate Solution Steps
 
-    func validateStep(
+    func validateSteps(
         problem: String,
-        stepText: String,
-        previousSteps: [String]? = nil,
+        steps: [String],
         difficulty: String? = "10th Grade",
         topic: String? = nil
-    ) async -> (isCorrect: Bool?, feedback: String) {
-        let body = ValidateStepRequestBody(
+    ) async -> [StepValidationResult]? {
+        let body = ValidateStepsRequestBody(
             problem: problem,
-            stepText: stepText,
-            previousSteps: previousSteps,
+            steps: steps,
             difficulty: difficulty,
             topic: topic
         )
 
         do {
-            let result: AIResponseBody = try await post(endpoint: "/ai/validate", body: body)
-            return (result.isCorrect, result.response)
+            let result: BatchAIResponseBody = try await post(endpoint: "/ai/validate", body: body)
+            return result.results
         } catch {
-            print("❌ AIService.validateStep failed: \(error)")
-            return (nil, "Could not validate — AI server unreachable.")
+            print("❌ AIService.validateSteps failed: \(error)")
+            return nil
         }
     }
 

@@ -28,13 +28,10 @@ class HintRequest(BaseModel):
     topic: Optional[str] = Field(None, description="Math topic, e.g. Algebra, Geometry")
 
 
-class ValidateStepRequest(BaseModel):
-    """Request body for /ai/validate endpoint — checks a single solution step."""
+class ValidateStepsRequest(BaseModel):
+    """Request body for /ai/validate endpoint — checks a sequence of solution steps."""
     problem: str = Field(..., description="The full math problem statement")
-    step_text: str = Field(..., description="The single line / step the student wrote")
-    previous_steps: Optional[List[str]] = Field(
-        None, description="All prior solution steps for context"
-    )
+    steps: List[str] = Field(..., description="The sequence of steps written by the student so far")
     difficulty: Optional[str] = Field("10th Grade")
     topic: Optional[str] = Field(None)
 
@@ -58,6 +55,19 @@ class AIResponse(BaseModel):
         None, description="For validation — whether the step is correct"
     )
     hint_type: str = Field("hint", description="Echo of the requested hint type")
+
+
+class StepValidationResult(BaseModel):
+    step_index: int = Field(..., description="Index of the step in the submitted array")
+    is_correct: bool = Field(..., description="Whether the step is correct")
+    feedback: str = Field(..., description="Feedback for this specific step")
+
+
+class BatchAIResponse(BaseModel):
+    """Batch AI response payload for validating multiple steps."""
+    results: List[StepValidationResult] = Field(..., description="Validation result for each step")
+    reasoning: Optional[str] = Field(None, description="DeepSeek R1 chain-of-thought reasoning")
+    hint_type: str = Field("validate", description="Echo of the requested hint type")
 
 
 class HealthResponse(BaseModel):

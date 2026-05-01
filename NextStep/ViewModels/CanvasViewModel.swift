@@ -27,8 +27,6 @@ final class CanvasViewModel: ObservableObject {
 
     // Auto-validation state  — drives the inline icons on the canvas
     @Published var validatedSteps: [ValidatedStep] = []
-    /// Texts already sent for validation so we don't re-send.
-    private var validatedTexts: Set<String> = []
 
     // Cognitive Cooldown
     @Published var cooldownRemaining: Int = 0
@@ -71,7 +69,6 @@ final class CanvasViewModel: ObservableObject {
         aiPanelHint = ""
         isLoadingAI = false
         validatedSteps = []
-        validatedTexts = []
         conversationHistory = []
         cooldownTimer?.invalidate()
         ocrTask?.cancel()
@@ -107,49 +104,106 @@ final class CanvasViewModel: ObservableObject {
 
             print("📝 OCR found \(lines.count) line(s): \(lines.map { $0.text })")
 
-            // Collect previously validated texts for context
-            let previousTexts = validatedSteps.compactMap { step -> String? in
-                guard step.isCorrect != nil else { return nil }
-                return step.text
-            }
+            var newValidatedSteps: [ValidatedStep] = []
+            var oldSteps = self.validatedSteps
 
+            // 1. Map OCR lines to existing steps or create new ones
             for line in lines {
                 let normalised = line.text.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !normalised.isEmpty,
-                      normalised.count > 1,  // skip single characters
-                      !validatedTexts.contains(normalised)
-                else { continue }
+                guard !normalised.isEmpty, normalised.count > 1 else { continue }
+                
+                if let oldIndex = oldSteps.firstIndex(where: { line.canvasRect.intersects($0.canvasRect.insetBy(dx: -40, dy: -40)) }) {
+                    var existingStep = oldSteps[oldIndex]
+                    existingStep.canvasRect = line.canvasRect
+                    if existingStep.text != normalised {
+                        existingStep.text = normalised
+                    }
+                    newValidatedSteps.append(existingStep)
+                    oldSteps.remove(at: oldIndex)
+                } else {
+                    let newStep = ValidatedStep(text: normalised, canvasRect: line.canvasRect, isCorrect: nil, feedback: "", isValidating: true)
+                    newValidatedSteps.append(newStep)
+                }
+            }
+            
+            // 2. Determine where divergence starts (edits, insertions, or un-validated steps)
+            var firstChangedIndex = newValidatedSteps.count
+            for i in 0..<newValidatedSteps.count {
+                if i >= self.validatedSteps.count || newValidatedSteps[i].text != self.validatedSteps[i].text {
+                    firstChangedIndex = min(firstChangedIndex, i)
+                    break
+                }
+            }
+            
+            // If steps were erased from the middle, divergence is at the mismatch point
+            if self.validatedSteps.count > newValidatedSteps.count {
+                for i in 0..<min(newValidatedSteps.count, self.validatedSteps.count) {
+                    if newValidatedSteps[i].text != self.validatedSteps[i].text {
+                        firstChangedIndex = min(firstChangedIndex, i)
+                        break
+                    }
+                }
+            }
 
-                validatedTexts.insert(normalised)
-                print("🆕 New step to validate: \"\(normalised)\"")
-
-                // Add a "validating" placeholder immediately so the spinner shows
-                let placeholder = ValidatedStep(
-                    text: normalised,
-                    canvasRect: line.canvasRect,
-                    isCorrect: nil,
-                    feedback: "",
-                    isValidating: true
-                )
-                validatedSteps.append(placeholder)
-                let stepIndex = validatedSteps.count - 1
-
-                // Fire-and-forget validation call to backend
-                Task {
-                    print("📡 Sending step \(stepIndex) to backend for validation…")
-                    let result = await aiService.validateStep(
-                        problem: problem.statement,
-                        stepText: normalised,
-                        previousSteps: previousTexts,
-                        difficulty: problem.difficulty,
-                        topic: problem.topic
-                    )
-
-                    guard stepIndex < validatedSteps.count else { return }
-                    validatedSteps[stepIndex].isCorrect = result.isCorrect
-                    validatedSteps[stepIndex].feedback = result.feedback
-                    validatedSteps[stepIndex].isValidating = false
-                    print("✅ Step \(stepIndex) validated: correct=\(String(describing: result.isCorrect))")
+            // 3. Mark all downstream steps as needing validation
+            var needsBatchValidation = false
+            for i in 0..<newValidatedSteps.count {
+                if i >= firstChangedIndex || newValidatedSteps[i].isCorrect == nil {
+                    newValidatedSteps[i].isCorrect = nil
+                    newValidatedSteps[i].feedback = ""
+                    newValidatedSteps[i].isValidating = true
+                    needsBatchValidation = true
+                }
+            }
+            
+            self.validatedSteps = newValidatedSteps
+            
+            // 4. Fire a single batch validation request
+            if needsBatchValidation && !newValidatedSteps.isEmpty {
+                self.fireBatchValidation(for: newValidatedSteps)
+            }
+        }
+    }
+    
+    private func fireBatchValidation(for steps: [ValidatedStep]) {
+        let texts = steps.map { $0.text }
+        
+        Task {
+            print("📡 Sending batch of \(texts.count) steps to backend for validation…")
+            let results = await aiService.validateSteps(
+                problem: problem.statement,
+                steps: texts,
+                difficulty: problem.difficulty,
+                topic: problem.topic
+            )
+            
+            guard let results = results else {
+                print("⚠️ Batch validation failed.")
+                for i in 0..<self.validatedSteps.count {
+                    if self.validatedSteps[i].isValidating {
+                        self.validatedSteps[i].isValidating = false
+                    }
+                }
+                return
+            }
+            
+            // Match results back to UI safely
+            for result in results {
+                let index = result.stepIndex
+                if index >= 0 && index < self.validatedSteps.count {
+                    if self.validatedSteps[index].text == texts[index] {
+                        self.validatedSteps[index].isCorrect = result.isCorrect
+                        self.validatedSteps[index].feedback = result.feedback
+                        self.validatedSteps[index].isValidating = false
+                        print("✅ Step \(index) [\"\(texts[index])\"] validated: correct=\(result.isCorrect)")
+                    }
+                }
+            }
+            
+            // Clear any lingering validating flags (e.g. if backend returned fewer results)
+            for i in 0..<self.validatedSteps.count {
+                if self.validatedSteps[i].text == texts[i] {
+                    self.validatedSteps[i].isValidating = false
                 }
             }
         }

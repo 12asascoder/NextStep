@@ -8,10 +8,11 @@ from fastapi import APIRouter, HTTPException
 
 from app.models import (
     HintRequest,
-    ValidateStepRequest,
+    ValidateStepsRequest,
     FullSolutionRequest,
     AIResponse,
     HealthResponse,
+    BatchAIResponse,
 )
 from app.prompts import (
     build_hint_messages,
@@ -61,18 +62,17 @@ async def get_hint(req: HintRequest):
     )
 
 
-# ── Validate a single solution step ─────────────────────────────────
+# ── Validate a sequence of solution steps ───────────────────────────────
 
-@router.post("/validate", response_model=AIResponse)
-async def validate_step(req: ValidateStepRequest):
+@router.post("/validate", response_model=BatchAIResponse)
+async def validate_steps(req: ValidateStepsRequest):
     """
-    Checks whether a student's solution step is mathematically correct.
-    Returns is_correct boolean + textual feedback.
+    Checks whether a sequence of student solution steps is mathematically correct.
+    Returns a batch array of correctness and textual feedback.
     """
     messages = build_validate_messages(
         problem=req.problem,
-        step_text=req.step_text,
-        previous_steps=req.previous_steps,
+        steps=req.steps,
         difficulty=req.difficulty or "10th Grade",
         topic=req.topic,
     )
@@ -82,22 +82,29 @@ async def validate_step(req: ValidateStepRequest):
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"DeepSeek API error: {exc}")
 
-    # Try to parse structured JSON from the response
-    is_correct = None
-    feedback = content
+    # Try to parse structured JSON array from the response
+    import re
+    results = []
     try:
-        parsed = json.loads(content)
-        is_correct = parsed.get("is_correct")
-        feedback = parsed.get("feedback", content)
+        # Strip markdown json block if present
+        clean_content = re.sub(r'^```(?:json)?\s*(.*?)\s*```$', r'\1', content.strip(), flags=re.DOTALL | re.MULTILINE).strip()
+        parsed_array = json.loads(clean_content)
+        
+        if isinstance(parsed_array, list):
+            for item in parsed_array:
+                results.append({
+                    "step_index": item.get("step_index", 0),
+                    "is_correct": item.get("is_correct", False),
+                    "feedback": item.get("feedback", "")
+                })
     except (json.JSONDecodeError, TypeError):
-        # Model didn't return strict JSON — use raw text as feedback
+        # Model didn't return strict JSON — fallback or empty array
         pass
 
-    return AIResponse(
-        response=feedback,
+    return BatchAIResponse(
+        results=results,
         reasoning=reasoning,
-        is_correct=is_correct,
-        hint_type="validate",
+        hint_type="validate"
     )
 
 

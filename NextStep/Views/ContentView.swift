@@ -2,29 +2,28 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = CanvasViewModel()
+    @State private var navigationPath = NavigationPath()
+    @State private var showSolveNew = false
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             VStack {
                 HStack {
                     Text("Sums")
                         .font(.system(size: 40, weight: .bold, design: .serif))
                     Spacer()
-                    Button("Solve\nNew") { }
-                        .font(.system(size: 18, weight: .medium, design: .serif))
-                        .multilineTextAlignment(.trailing)
+                    Button(action: { showSolveNew = true }) {
+                        Text("Solve\nNew")
+                            .font(.system(size: 18, weight: .medium, design: .serif))
+                            .multilineTextAlignment(.trailing)
+                    }
                 }
                 .padding(.horizontal, 32)
                 .padding(.top, 40)
                 .padding(.bottom, 24)
 
                 List(MathProblem.samples) { problem in
-                    NavigationLink {
-                        CanvasView(viewModel: viewModel)
-                            .onAppear {
-                                viewModel.loadProblem(problem)
-                            }
-                    } label: {
+                    NavigationLink(value: problem) {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(problem.title)
                                 .font(NSFont.heading)
@@ -38,7 +37,6 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.paperBackground)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
-                        // .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.blockBorder, lineWidth: 1)) // optional styling
                     }
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
@@ -47,6 +45,17 @@ struct ContentView: View {
                 .listStyle(.plain)
             }
             .background(Color.paperCard.ignoresSafeArea())
+            .navigationDestination(for: MathProblem.self) { problem in
+                CanvasView(viewModel: viewModel)
+                    .onAppear {
+                        viewModel.loadProblem(problem)
+                    }
+            }
+            .sheet(isPresented: $showSolveNew) {
+                SolveNewSelectionView(onProblemCreated: { newProblem in
+                    navigationPath.append(newProblem)
+                })
+            }
         }
     }
 }
