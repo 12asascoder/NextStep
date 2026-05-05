@@ -10,6 +10,8 @@ struct PencilKitView: UIViewRepresentable {
     @Binding var canvasData: Data?
     /// Validated steps to show icons for — driven by the ViewModel.
     var validatedSteps: [ValidatedStep]
+    /// Next-step suggestion to render inline below the last step.
+    var nextStepSuggestion: String?
     /// Called when a validation icon is tapped.
     var onStepTapped: ((ValidatedStep) -> Void)?
 
@@ -69,6 +71,7 @@ struct PencilKitView: UIViewRepresentable {
         // Update validation icons on canvas
         context.coordinator.updateValidationIcons(
             steps: validatedSteps,
+            nextStepSuggestion: nextStepSuggestion,
             onTap: onStepTapped
         )
     }
@@ -87,9 +90,12 @@ struct PencilKitView: UIViewRepresentable {
 
         // Validation icon tracking
         private var iconViews: [UIView] = []
+        /// Inline hint/correction labels
+        private var labelViews: [UIView] = []
         /// Maps icon tag → (step, callback)
         private var stepLookup: [Int: (ValidatedStep, ((ValidatedStep) -> Void)?)] = [:]
         private let iconTagBase = 9000
+        private let labelTagBase = 8000
         /// Track what's currently rendered to avoid unnecessary rebuilds
         private var renderedStepIDs: Set<UUID> = []
 
@@ -139,29 +145,22 @@ struct PencilKitView: UIViewRepresentable {
         func clearValidationIcons() {
             for v in iconViews { v.removeFromSuperview() }
             iconViews.removeAll()
+            for v in labelViews { v.removeFromSuperview() }
+            labelViews.removeAll()
             stepLookup.removeAll()
             renderedStepIDs.removeAll()
         }
 
-        func updateValidationIcons(steps: [ValidatedStep], onTap: ((ValidatedStep) -> Void)?) {
+        func updateValidationIcons(steps: [ValidatedStep], nextStepSuggestion: String? = nil, onTap: ((ValidatedStep) -> Void)?) {
             guard let canvas = canvasView else { return }
-
-            // Build set of current step IDs + validation states
-            let currentState = steps.map { "\($0.id)-\($0.isValidating)-\(String(describing: $0.isCorrect))" }
-            let currentHash = currentState.joined()
-            let renderedHash = renderedStepIDs.map { $0.uuidString }.sorted().joined()
-
-            // Quick check: if step count matches and IDs haven't changed, skip full rebuild
-            // But always rebuild if any validation state changed
-            let newIDs = Set(steps.map { $0.id })
-            let needsRebuild = newIDs != renderedStepIDs || steps.contains(where: { step in
-                iconViews.first(where: { $0.tag == iconTagBase + (steps.firstIndex(where: { $0.id == step.id }) ?? 0) }) == nil
-            }) || steps.contains(where: { !$0.isValidating && !renderedStepIDs.isEmpty })
 
             // Always rebuild for simplicity — the icon count is small
             for v in iconViews { v.removeFromSuperview() }
             iconViews.removeAll()
+            for v in labelViews { v.removeFromSuperview() }
+            labelViews.removeAll()
             stepLookup.removeAll()
+            let newIDs = Set(steps.map { $0.id })
             renderedStepIDs = newIDs
 
             let iconSize: CGFloat = 36
@@ -194,7 +193,67 @@ struct PencilKitView: UIViewRepresentable {
                         iconView.transform = .identity
                     }
                 }
+
+                // Corrected step label (shown below error steps)
+                if step.isCorrect == false, let corrected = step.correctedStep {
+                    let label = buildInlineLabel(
+                        text: "→ \(corrected)",
+                        color: UIColor.systemGreen,
+                        bgColor: UIColor.systemGreen.withAlphaComponent(0.08)
+                    )
+                    let labelX = step.canvasRect.minX
+                    let labelY = step.canvasRect.maxY + 6
+                    label.frame = CGRect(x: labelX, y: labelY, width: min(label.intrinsicContentSize.width + 24, 400), height: 28)
+                    label.tag = labelTagBase + index
+                    canvas.addSubview(label)
+                    labelViews.append(label)
+
+                    // Fade in
+                    label.alpha = 0
+                    UIView.animate(withDuration: 0.3, delay: 0.2) {
+                        label.alpha = 1
+                    }
+                }
             }
+
+            // Next-step hint label (below the last step)
+            if let suggestion = nextStepSuggestion, !suggestion.isEmpty, let lastStep = steps.last {
+                let label = buildInlineLabel(
+                    text: "→ Next: \(suggestion)",
+                    color: UIColor.systemBlue,
+                    bgColor: UIColor.systemBlue.withAlphaComponent(0.06)
+                )
+                let labelX = lastStep.canvasRect.minX
+                let labelY = lastStep.canvasRect.maxY + 12
+                label.frame = CGRect(x: labelX, y: labelY, width: min(label.intrinsicContentSize.width + 24, 500), height: 30)
+                label.tag = labelTagBase + 999
+                canvas.addSubview(label)
+                labelViews.append(label)
+
+                // Slide in animation
+                label.alpha = 0
+                label.transform = CGAffineTransform(translationX: -20, y: 0)
+                UIView.animate(withDuration: 0.4, delay: 0.3, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5) {
+                    label.alpha = 0.9
+                    label.transform = .identity
+                }
+            }
+        }
+
+        // MARK: - Build Inline Label
+
+        private func buildInlineLabel(text: String, color: UIColor, bgColor: UIColor) -> PaddedLabel {
+            let label = PaddedLabel()
+            label.edgeInsets = UIEdgeInsets(top: 4, left: 12, bottom: 4, right: 12)
+            label.text = text
+            label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+            label.textColor = color
+            label.backgroundColor = bgColor
+            label.layer.cornerRadius = 8
+            label.layer.masksToBounds = true
+            label.textAlignment = .left
+            label.sizeToFit()
+            return label
         }
 
         // MARK: - Build Icon Views
@@ -250,5 +309,30 @@ struct PencilKitView: UIViewRepresentable {
 
             return container
         }
+    }
+}
+
+// MARK: - Padded UILabel
+
+/// A UILabel subclass that supports internal edge insets for padding.
+class PaddedLabel: UILabel {
+    var edgeInsets = UIEdgeInsets.zero
+
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: edgeInsets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(
+            width: size.width + edgeInsets.left + edgeInsets.right,
+            height: size.height + edgeInsets.top + edgeInsets.bottom
+        )
+    }
+
+    override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
+        let insetBounds = bounds.inset(by: edgeInsets)
+        let textRect = super.textRect(forBounds: insetBounds, limitedToNumberOfLines: numberOfLines)
+        return textRect
     }
 }

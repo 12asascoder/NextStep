@@ -86,6 +86,7 @@ struct CanvasView: View {
                         PencilKitView(
                             canvasData: $viewModel.solutionData,
                             validatedSteps: viewModel.validatedSteps,
+                            nextStepSuggestion: viewModel.nextStepSuggestion,
                             onStepTapped: { step in
                                 selectedStep = step
                                 showFeedback = true
@@ -100,6 +101,80 @@ struct CanvasView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             
+            // Completion Banner (overlays at top when problem is solved)
+            if viewModel.problemComplete {
+                VStack {
+                    HStack(spacing: 12) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 28))
+                            .foregroundStyle(.white)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Problem Solved!")
+                                .font(NSFont.heading)
+                                .foregroundStyle(.white)
+                            Text("All steps are correct. Great work!")
+                                .font(NSFont.caption)
+                                .foregroundStyle(.white.opacity(0.85))
+                        }
+                        Spacer()
+                    }
+                    .padding(16)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.accentGreen, Color.accentGreen.opacity(0.8)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(16)
+                    .cardShadow()
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    
+                    Spacer()
+                }
+                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: viewModel.problemComplete)
+            }
+
+            // Next-Step Suggestion Card (floating at bottom-left)
+            if let suggestion = viewModel.nextStepSuggestion, !viewModel.problemComplete {
+                VStack {
+                    Spacer()
+                    HStack(spacing: 12) {
+                        Image(systemName: "arrow.right.circle.fill")
+                            .font(.system(size: 24))
+                            .foregroundStyle(Color.accentBlue)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Next Step")
+                                .font(NSFont.caption)
+                                .foregroundStyle(Color.textSecondary)
+                            Text(suggestion)
+                                .font(NSFont.body)
+                                .foregroundStyle(Color.textPrimary)
+                                .lineLimit(2)
+                        }
+                        Spacer()
+                        Button {
+                            withAnimation { viewModel.nextStepSuggestion = nil }
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(Color.textSecondary.opacity(0.5))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(16)
+                    .background(Color.aiPanelBg)
+                    .cornerRadius(16)
+                    .cardShadow()
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 100)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+                .animation(.spring(response: 0.4, dampingFraction: 0.75), value: viewModel.nextStepSuggestion != nil)
+            }
+
             // Floating AI Assistant Button
             Button {
                 isShowingAIPopup = true
@@ -172,6 +247,27 @@ struct StepFeedbackSheet: View {
             }
             .padding(.horizontal, 24)
 
+            // Corrected step (if AI found an error)
+            if let corrected = step.correctedStep {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .foregroundStyle(Color.accentGreen)
+                        Text("Corrected Step")
+                            .font(NSFont.heading)
+                            .foregroundStyle(Color.accentGreen)
+                    }
+                    Text(corrected)
+                        .font(NSFont.math)
+                        .foregroundStyle(Color.textPrimary)
+                        .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.resultBg)
+                        .cornerRadius(10)
+                }
+                .padding(.horizontal, 24)
+            }
+
             // AI feedback
             if !step.feedback.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
@@ -190,6 +286,28 @@ struct StepFeedbackSheet: View {
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.aiPanelBg)
+                .cornerRadius(12)
+                .padding(.horizontal, 24)
+            }
+
+            // Next step hint (if available on this step)
+            if let nextHint = step.nextStepHint {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: "arrow.right.circle.fill")
+                            .foregroundStyle(Color.accentBlue)
+                        Text("Next Step")
+                            .font(NSFont.heading)
+                            .foregroundStyle(Color.accentBlue)
+                    }
+                    Text(nextHint)
+                        .font(NSFont.body)
+                        .foregroundStyle(Color.textPrimary)
+                        .lineSpacing(4)
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.accentBlue.opacity(0.08))
                 .cornerRadius(12)
                 .padding(.horizontal, 24)
             }

@@ -3,7 +3,7 @@ Pydantic models for request / response payloads between the iOS app and backend.
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Literal
 
 
 # ── Incoming request from the Swift app ──────────────────────────────
@@ -74,3 +74,32 @@ class HealthResponse(BaseModel):
     """Health check response."""
     status: str = "ok"
     model: str = ""
+
+
+# ── Reasoning Engine (unified validate + guide) ─────────────────────
+
+class ReasoningEngineRequest(BaseModel):
+    """Request body for /ai/reason endpoint — unified validation + guidance."""
+    problem: str = Field(..., description="The full math problem statement")
+    steps: List[str] = Field(..., description="The sequence of steps written by the student so far")
+    difficulty: Optional[str] = Field("10th Grade")
+    topic: Optional[str] = Field(None)
+
+
+class ReasoningEngineResponse(BaseModel):
+    """Structured response from the math reasoning engine."""
+    status: Literal["correct", "mistake", "complete", "insufficient"] = Field(
+        ..., description="Overall status of the student's work"
+    )
+    error_step_index: Optional[int] = Field(
+        None, description="Index of the first incorrect step (0-based)"
+    )
+    corrected_step: Optional[str] = Field(
+        None, description="Corrected version of the incorrect step"
+    )
+    next_step: str = Field(
+        ..., description="The immediate next step the student should take"
+    )
+    explanation: str = Field(
+        ..., description="Short explanation (max 15 words)"
+    )

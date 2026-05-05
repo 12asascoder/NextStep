@@ -13,11 +13,14 @@ from app.models import (
     AIResponse,
     HealthResponse,
     BatchAIResponse,
+    ReasoningEngineRequest,
+    ReasoningEngineResponse,
 )
 from app.prompts import (
     build_hint_messages,
     build_validate_messages,
     build_solution_messages,
+    build_reasoning_engine_messages,
 )
 from app.deepseek_client import chat_completion
 from app.config import DEEPSEEK_MODEL
@@ -132,3 +135,53 @@ async def full_solution(req: FullSolutionRequest):
         reasoning=reasoning,
         hint_type="solution",
     )
+
+
+# ── Unified Reasoning Engine ────────────────────────────────────────
+
+@router.post("/reason", response_model=ReasoningEngineResponse)
+async def reasoning_engine(req: ReasoningEngineRequest):
+    """
+    Unified math reasoning engine: validates steps sequentially,
+    finds the first error, provides corrections, and suggests the next step.
+    Returns a single structured JSON response.
+    """
+    messages = build_reasoning_engine_messages(
+        problem=req.problem,
+        steps=req.steps,
+        difficulty=req.difficulty or "10th Grade",
+        topic=req.topic,
+    )
+
+    try:
+        content, reasoning = await chat_completion(messages)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"DeepSeek API error: {exc}")
+
+    # Parse the structured JSON response from the model
+    import re
+    try:
+        # Strip markdown json block if present
+        clean = re.sub(
+            r'^```(?:json)?\s*(.*?)\s*```$', r'\1',
+            content.strip(), flags=re.DOTALL | re.MULTILINE
+        ).strip()
+        parsed = json.loads(clean)
+
+        return ReasoningEngineResponse(
+            status=parsed.get("status", "insufficient"),
+            error_step_index=parsed.get("error_step_index"),
+            corrected_step=parsed.get("corrected_step"),
+            next_step=parsed.get("next_step", ""),
+            explanation=parsed.get("explanation", ""),
+        )
+    except (json.JSONDecodeError, TypeError, KeyError) as exc:
+        logger.warning("Failed to parse reasoning engine response: %s | raw: %s", exc, content[:500])
+        # Fallback: return an insufficient status so the client can handle gracefully
+        return ReasoningEngineResponse(
+            status="insufficient",
+            error_step_index=None,
+            corrected_step=None,
+            next_step="",
+            explanation="AI response could not be parsed",
+        )

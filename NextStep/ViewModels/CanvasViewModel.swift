@@ -28,6 +28,10 @@ final class CanvasViewModel: ObservableObject {
     // Auto-validation state  — drives the inline icons on the canvas
     @Published var validatedSteps: [ValidatedStep] = []
 
+    // Reasoning engine state
+    @Published var nextStepSuggestion: String? = nil
+    @Published var problemComplete: Bool = false
+
     // Cognitive Cooldown
     @Published var cooldownRemaining: Int = 0
     private var cooldownTimer: Timer?
@@ -69,6 +73,8 @@ final class CanvasViewModel: ObservableObject {
         aiPanelHint = ""
         isLoadingAI = false
         validatedSteps = []
+        nextStepSuggestion = nil
+        problemComplete = false
         conversationHistory = []
         cooldownTimer?.invalidate()
         ocrTask?.cancel()
@@ -158,51 +164,98 @@ final class CanvasViewModel: ObservableObject {
             
             self.validatedSteps = newValidatedSteps
             
-            // 4. Fire a single batch validation request
+            // 4. Fire the unified reasoning engine request
             if needsBatchValidation && !newValidatedSteps.isEmpty {
-                self.fireBatchValidation(for: newValidatedSteps)
+                self.fireReasoningEngine(for: newValidatedSteps)
             }
         }
     }
     
-    private func fireBatchValidation(for steps: [ValidatedStep]) {
+    private func fireReasoningEngine(for steps: [ValidatedStep]) {
         let texts = steps.map { $0.text }
         
         Task {
-            print("📡 Sending batch of \(texts.count) steps to backend for validation…")
-            let results = await aiService.validateSteps(
+            print("📡 Sending \(texts.count) steps to reasoning engine…")
+            let response = await aiService.reasonAboutSteps(
                 problem: problem.statement,
                 steps: texts,
                 difficulty: problem.difficulty,
                 topic: problem.topic
             )
             
-            guard let results = results else {
-                print("⚠️ Batch validation failed.")
+            guard let response = response else {
+                print("⚠️ Reasoning engine call failed.")
                 for i in 0..<self.validatedSteps.count {
-                    if self.validatedSteps[i].isValidating {
-                        self.validatedSteps[i].isValidating = false
-                    }
+                    self.validatedSteps[i].isValidating = false
                 }
                 return
             }
             
-            // Match results back to UI safely
-            for result in results {
-                let index = result.stepIndex
-                if index >= 0 && index < self.validatedSteps.count {
-                    if self.validatedSteps[index].text == texts[index] {
-                        self.validatedSteps[index].isCorrect = result.isCorrect
-                        self.validatedSteps[index].feedback = result.feedback
-                        self.validatedSteps[index].isValidating = false
-                        print("✅ Step \(index) [\"\(texts[index])\"] validated: correct=\(result.isCorrect)")
+            print("🧠 Reasoning engine: status=\(response.status), errorIndex=\(String(describing: response.errorStepIndex))")
+            
+            // Reset reasoning state
+            self.nextStepSuggestion = nil
+            self.problemComplete = false
+            
+            switch response.status {
+            case "correct":
+                // All steps correct — mark all ✅, show next step
+                for i in 0..<self.validatedSteps.count {
+                    self.validatedSteps[i].isCorrect = true
+                    self.validatedSteps[i].feedback = i == self.validatedSteps.count - 1
+                        ? response.explanation : "Correct"
+                    self.validatedSteps[i].isValidating = false
+                    self.validatedSteps[i].correctedStep = nil
+                }
+                self.nextStepSuggestion = response.nextStep
+                // Store hint on the last step for inline display
+                if !self.validatedSteps.isEmpty {
+                    self.validatedSteps[self.validatedSteps.count - 1].nextStepHint = response.nextStep
+                }
+                
+            case "mistake":
+                // Mark steps before error as ✅, error step as ❌, rest as unvalidated
+                let errorIdx = response.errorStepIndex ?? 0
+                for i in 0..<self.validatedSteps.count {
+                    if i < errorIdx {
+                        self.validatedSteps[i].isCorrect = true
+                        self.validatedSteps[i].feedback = "Correct"
+                        self.validatedSteps[i].isValidating = false
+                    } else if i == errorIdx {
+                        self.validatedSteps[i].isCorrect = false
+                        self.validatedSteps[i].feedback = response.explanation
+                        self.validatedSteps[i].correctedStep = response.correctedStep
+                        self.validatedSteps[i].isValidating = false
+                    } else {
+                        // Steps after error: clear validation (they depend on the wrong step)
+                        self.validatedSteps[i].isCorrect = nil
+                        self.validatedSteps[i].feedback = ""
+                        self.validatedSteps[i].isValidating = false
                     }
                 }
-            }
-            
-            // Clear any lingering validating flags (e.g. if backend returned fewer results)
-            for i in 0..<self.validatedSteps.count {
-                if self.validatedSteps[i].text == texts[i] {
+                self.nextStepSuggestion = response.nextStep
+                
+            case "complete":
+                // Problem fully solved!
+                for i in 0..<self.validatedSteps.count {
+                    self.validatedSteps[i].isCorrect = true
+                    self.validatedSteps[i].feedback = "Correct"
+                    self.validatedSteps[i].isValidating = false
+                }
+                self.problemComplete = true
+                self.nextStepSuggestion = nil
+                
+            case "insufficient":
+                // Unclear input — clear all validation
+                for i in 0..<self.validatedSteps.count {
+                    self.validatedSteps[i].isCorrect = nil
+                    self.validatedSteps[i].feedback = response.explanation
+                    self.validatedSteps[i].isValidating = false
+                }
+                
+            default:
+                // Unknown status — clear validating flags
+                for i in 0..<self.validatedSteps.count {
                     self.validatedSteps[i].isValidating = false
                 }
             }

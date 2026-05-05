@@ -57,6 +57,29 @@ struct FullSolutionRequestBody: Codable {
     let topic: String?
 }
 
+struct ReasoningEngineRequestBody: Codable {
+    let problem: String
+    let steps: [String]
+    let difficulty: String?
+    let topic: String?
+}
+
+struct ReasoningEngineResponseBody: Codable {
+    let status: String           // "correct" | "mistake" | "complete" | "insufficient"
+    let errorStepIndex: Int?
+    let correctedStep: String?
+    let nextStep: String
+    let explanation: String
+
+    enum CodingKeys: String, CodingKey {
+        case status
+        case errorStepIndex = "error_step_index"
+        case correctedStep = "corrected_step"
+        case nextStep = "next_step"
+        case explanation
+    }
+}
+
 struct AIResponseBody: Codable {
     let response: String
     let reasoning: String?
@@ -136,6 +159,30 @@ final class AIService {
             return result.results
         } catch {
             print("❌ AIService.validateSteps failed: \(error)")
+            return nil
+        }
+    }
+
+    // MARK: - Reasoning Engine (Unified Validate + Guide)
+
+    func reasonAboutSteps(
+        problem: String,
+        steps: [String],
+        difficulty: String? = "10th Grade",
+        topic: String? = nil
+    ) async -> ReasoningEngineResponseBody? {
+        let body = ReasoningEngineRequestBody(
+            problem: problem,
+            steps: steps,
+            difficulty: difficulty,
+            topic: topic
+        )
+
+        do {
+            let result: ReasoningEngineResponseBody = try await post(endpoint: "/ai/reason", body: body)
+            return result
+        } catch {
+            print("❌ AIService.reasonAboutSteps failed: \(error)")
             return nil
         }
     }

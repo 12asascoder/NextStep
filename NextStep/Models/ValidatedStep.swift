@@ -12,4 +12,8 @@ struct ValidatedStep: Identifiable {
     var feedback: String = ""
     /// Whether we are currently waiting for the backend.
     var isValidating: Bool = true
+    /// If the AI found an error, the corrected version of this step.
+    var correctedStep: String? = nil
+    /// The suggested next step (shown inline below the last correct step).
+    var nextStepHint: String? = nil
 }
