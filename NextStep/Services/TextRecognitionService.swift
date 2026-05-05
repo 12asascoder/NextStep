@@ -92,6 +92,64 @@ final class TextRecognitionService {
         }
     }
 
+    // MARK: - Multi-Question Extraction
+
+    /// Recognise text from a scanned image and intelligently split it into
+    /// individual questions.  Returns up to 4 distinct question strings.
+    ///
+    /// Detection heuristics (applied in order):
+    /// 1. Numbered patterns: "1.", "2.", "Q1", "(a)", etc.
+    /// 2. Blank-line separation (double newlines).
+    /// 3. Fallback: treat the entire text as a single question.
+    static func extractQuestions(from image: UIImage) async -> [String] {
+        let rawText = await recognizeText(from: image)
+        guard !rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return []
+        }
+        return splitIntoQuestions(rawText)
+    }
+
+    /// Pure logic: split OCR output into distinct question strings.
+    static func splitIntoQuestions(_ text: String) -> [String] {
+        // Pattern: lines starting with "1." / "Q1" / "(1)" / "(a)" / "a)" / "i)" etc.
+        // We look for a leading number/letter marker at the start of a line.
+        let numberedPattern = #"(?m)^[ \t]*(?:\(?(?:\d{1,2}|[a-dA-D]|[ivxIVX]+)[).\]:]|\b[Qq]\s*\d{1,2}[).:]?)"#
+        guard let regex = try? NSRegularExpression(pattern: numberedPattern) else {
+            return [text.trimmingCharacters(in: .whitespacesAndNewlines)]
+        }
+
+        let nsText = text as NSString
+        let matches = regex.matches(in: text, range: NSRange(location: 0, length: nsText.length))
+
+        if matches.count >= 2 {
+            // Split at each match location
+            var questions: [String] = []
+            for i in 0..<matches.count {
+                let start = matches[i].range.location
+                let end = (i + 1 < matches.count) ? matches[i + 1].range.location : nsText.length
+                let chunk = nsText.substring(with: NSRange(location: start, length: end - start))
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                if !chunk.isEmpty {
+                    questions.append(chunk)
+                }
+            }
+            return Array(questions.prefix(4))
+        }
+
+        // Fallback: split on double newlines (paragraph boundaries)
+        let paragraphs = text
+            .components(separatedBy: "\n\n")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty && $0.count > 3 }
+
+        if paragraphs.count >= 2 {
+            return Array(paragraphs.prefix(4))
+        }
+
+        // Single question
+        return [text.trimmingCharacters(in: .whitespacesAndNewlines)]
+    }
+
     // MARK: - Image Text Recognition (Solve New)
     
     /// Recognise text from a static image (e.g. from camera scanner)

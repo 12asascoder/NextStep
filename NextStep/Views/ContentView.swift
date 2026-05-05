@@ -1,5 +1,10 @@
 import SwiftUI
 
+/// Wrapper struct to make [MathProblem] a Hashable navigation destination.
+struct MathProblemBatch: Hashable {
+    let problems: [MathProblem]
+}
+
 struct ContentView: View {
     @StateObject private var viewModel = CanvasViewModel()
     @State private var navigationPath = NavigationPath()
@@ -45,16 +50,26 @@ struct ContentView: View {
                 .listStyle(.plain)
             }
             .background(Color.paperCard.ignoresSafeArea())
+            // Single problem destination (existing)
             .navigationDestination(for: MathProblem.self) { problem in
                 CanvasView(viewModel: viewModel)
                     .onAppear {
                         viewModel.loadProblem(problem)
                     }
             }
+            // Multi-problem batch destination (new)
+            .navigationDestination(for: MathProblemBatch.self) { batch in
+                MultiQuestionSolveView(problems: batch.problems)
+            }
             .sheet(isPresented: $showSolveNew) {
-                SolveNewSelectionView(onProblemCreated: { newProblem in
-                    navigationPath.append(newProblem)
-                })
+                SolveNewSelectionView(
+                    onProblemCreated: { newProblem in
+                        navigationPath.append(newProblem)
+                    },
+                    onMultipleProblemsCreated: { problems in
+                        navigationPath.append(MathProblemBatch(problems: problems))
+                    }
+                )
             }
         }
     }

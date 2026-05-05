@@ -101,7 +101,7 @@ final class AIService {
 
     // ⚠️ Change this to your Mac's local IP if running on a real device.
     // Use "localhost" for Simulator only.
-    static let baseURL = "http://10.3.156.164:8000"
+    static let baseURL = "http://10.3.19.5:8000"
 
 
     private let session: URLSession = {
