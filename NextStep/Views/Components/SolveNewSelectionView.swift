@@ -114,16 +114,19 @@ struct SolveNewSelectionView: View {
             .fullScreenCover(isPresented: $showingWriteCanvas) {
                 WriteQuestionView(onExtracted: { text in
                     self.showingWriteCanvas = false
-                    self.extractedText = text
-                    // small delay to allow WriteCanvas to dismiss before presenting Review
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.showingReview = true
-                    }
+                    let newProblem = MathProblem(
+                        title: "Custom Problem",
+                        statement: text,
+                        difficulty: "10th Grade",
+                        topic: "General Math"
+                    )
+                    onProblemCreated(newProblem)
+                    dismiss()
                 }, onCancel: {
                     self.showingWriteCanvas = false
                 })
             }
-            // Single question review (from Write Manually or single-question scan)
+            // Single question review (from scanner single-question scan)
             .fullScreenCover(isPresented: $showingReview) {
                 QuestionReviewView(text: extractedText, onConfirm: { finalText in
                     self.showingReview = false

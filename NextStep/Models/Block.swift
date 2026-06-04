@@ -4,8 +4,8 @@ import Foundation
 
 struct MathProblem: Identifiable, Codable, Equatable, Hashable {
     let id: UUID
-    let title: String
-    let statement: String
+    var title: String
+    var statement: String
     let difficulty: String
     let topic: String
 

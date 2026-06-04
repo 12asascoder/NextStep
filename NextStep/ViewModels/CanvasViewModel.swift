@@ -64,7 +64,8 @@ final class CanvasViewModel: ObservableObject {
             self.hintsUsed = 0
             self.independenceScore = 100
             self.cooldownRemaining = 0
-            autoSave()
+            // Don't autoSave here — no work has been done yet.
+            // A session will be saved once the user actually starts solving.
         }
     }
 
@@ -84,8 +85,6 @@ final class CanvasViewModel: ObservableObject {
     func updateSolutionData(_ data: Data) {
         self.solutionData = data
         autoSave()
-        // Trigger auto-validation OCR (debounced)
-        triggerAutoValidation()
     }
 
     // MARK: - Auto Validation via OCR
