@@ -119,8 +119,8 @@ struct ContentView: View {
 
                 // Stats row: Streak + Time
                 HStack(spacing: 16) {
-                    statPill(emoji: "🔥", value: "\(persistence.currentStreak) Days", color: Color.streakOrange)
-                    statPill(emoji: "🕐", value: persistence.formattedStudyTime, color: Color.timeGreen)
+                    statPill(systemImage: "flame.fill", value: "\(persistence.currentStreak) Days", color: Color(red: 0.85, green: 0.6, blue: 0.2))
+                    statPill(systemImage: "clock.fill", value: persistence.formattedStudyTime, color: Color(red: 0.5, green: 0.6, blue: 0.8))
                 }
                 .padding(.horizontal, 28)
                 .padding(.bottom, 20)
@@ -161,44 +161,18 @@ struct ContentView: View {
                 .frame(width: 200, height: 200)
 
             // Colored arc segments (mimicking the multi-subject ring)
-            // Yellow segment (top-right)
-            arcSegment(
-                startAngle: -60,
-                endAngle: 10,
-                color: Color.ringYellow,
-                width: 200
-            )
-
-            // Blue/lavender segment (left)
-            arcSegment(
-                startAngle: 140,
-                endAngle: 220,
-                color: Color.ringBlue,
-                width: 200
-            )
-
-            // Green segment (bottom-right)
-            arcSegment(
-                startAngle: 230,
-                endAngle: 310,
-                color: Color.ringGreen,
-                width: 200
-            )
-
-            // Olive/dark segment (bottom-left, partial)
-            arcSegment(
-                startAngle: 315,
-                endAngle: 340,
-                color: Color.ringOlive,
-                width: 200
-            )
+            arcSegment(startAngle: 15, endAngle: 85, color: Color.ringYellow, width: 200)
+            arcSegment(startAngle: 105, endAngle: 170, color: Color.ringGreen, width: 200)
+            arcSegment(startAngle: 190, endAngle: 260, color: Color.ringBlue, width: 200)
+            arcSegment(startAngle: 275, endAngle: 310, color: Color.ringYellow, width: 200)
+            arcSegment(startAngle: 325, endAngle: 355, color: Color(red: 0.76, green: 0.9, blue: 0.95), width: 200)
 
             // Subject icons around the ring
-            subjectIcon(systemName: "pencil.tip", angle: 155, radius: 115, bgColor: Color.ringYellow)
-            subjectIcon(systemName: "paragraphsign", angle: -75, radius: 115, bgColor: Color.ringBlue.opacity(0.7))
-            subjectIcon(systemName: "tablecells", angle: -40, radius: 115, bgColor: Color.ringYellow)
-            subjectIcon(systemName: "flask.fill", angle: 285, radius: 115, bgColor: Color.ringOlive)
-            subjectIcon(systemName: "pause.fill", angle: 185, radius: 115, bgColor: Color.ringYellow.opacity(0.7))
+            subjectIcon(systemName: "calculator.fill", angle: 50, radius: 100)
+            subjectIcon(systemName: "flask.fill", angle: 137.5, radius: 100)
+            subjectIcon(systemName: "pencil", angle: 225, radius: 100)
+            subjectIcon(systemName: "pause.fill", angle: 292.5, radius: 100)
+            subjectIcon(systemName: "paragraphsign", angle: 340, radius: 100)
 
             // Center score
             VStack(spacing: 4) {
@@ -223,7 +197,7 @@ struct ContentView: View {
     private func arcSegment(startAngle: Double, endAngle: Double, color: Color, width: CGFloat) -> some View {
         Circle()
             .trim(from: normalizeAngle(startAngle), to: normalizeAngle(endAngle))
-            .stroke(color, style: StrokeStyle(lineWidth: 14, lineCap: .round))
+            .stroke(color, style: StrokeStyle(lineWidth: 24, lineCap: .round))
             .frame(width: width, height: width)
             .rotationEffect(.degrees(-90))
     }
@@ -234,28 +208,24 @@ struct ContentView: View {
 
     // MARK: - Subject Icon
 
-    private func subjectIcon(systemName: String, angle: Double, radius: CGFloat, bgColor: Color) -> some View {
+    private func subjectIcon(systemName: String, angle: Double, radius: CGFloat) -> some View {
         let radians = (angle - 90) * .pi / 180
         let x = cos(radians) * Double(radius)
         let y = sin(radians) * Double(radius)
 
         return Image(systemName: systemName)
-            .font(.system(size: 10, weight: .bold))
-            .foregroundStyle(Color.inkColor.opacity(0.6))
-            .padding(6)
-            .background(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(bgColor.opacity(0.5))
-            )
+            .font(.system(size: 11, weight: .bold))
+            .foregroundStyle(Color.inkColor.opacity(0.5))
             .offset(x: x, y: y)
     }
 
     // MARK: - Stat Pill
 
-    private func statPill(emoji: String, value: String, color: Color) -> some View {
+    private func statPill(systemImage: String, value: String, color: Color) -> some View {
         HStack(spacing: 8) {
-            Text(emoji)
-                .font(.system(size: 20))
+            Image(systemName: systemImage)
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(color)
             Text(value)
                 .font(.system(size: 22, weight: .bold, design: .rounded))
                 .foregroundStyle(color)
@@ -277,9 +247,10 @@ struct ContentView: View {
     private func actionCard(icon: String, title: String, subtitle: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 16) {
+                Spacer()
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundStyle(Color.inkColor.opacity(0.6))
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundStyle(Color.inkColor.opacity(0.7))
                     .frame(width: 32)
 
                 VStack(alignment: .leading, spacing: 3) {
@@ -288,9 +259,8 @@ struct ContentView: View {
                         .foregroundStyle(Color.inkColor)
                     Text(subtitle)
                         .font(.system(size: 13, weight: .regular, design: .rounded))
-                        .foregroundStyle(Color.inkColor.opacity(0.45))
+                        .foregroundStyle(Color.inkColor.opacity(0.6))
                 }
-
                 Spacer()
             }
             .padding(.horizontal, 20)
