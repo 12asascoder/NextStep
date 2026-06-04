@@ -19,22 +19,7 @@ struct CanvasView: View {
     @State private var showSubjectPicker = false
     @State private var selectedSubject: String = ""
     @State private var showAIHintCard = false
-    @State private var activeInputMode: InputMode = .write
     @State private var isSidebarVisible = false
-
-    enum InputMode: String, CaseIterable {
-        case type = "Type"
-        case write = "Write"
-        case scan = "Scan"
-
-        var icon: String {
-            switch self {
-            case .type: return "keyboard"
-            case .write: return "pencil.tip"
-            case .scan: return "camera"
-            }
-        }
-    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -68,9 +53,6 @@ struct CanvasView: View {
                         .padding(.vertical, 12)
                 }
             }
-
-            // ── Bottom Toolbar ──
-            bottomToolbar
         }
         .background(Color.notebookBg.ignoresSafeArea())
         .navigationBarHidden(true)
@@ -503,54 +485,6 @@ struct CanvasView: View {
                 .stroke(Color.hintCardBorder, lineWidth: 0.5)
         )
         .shadow(color: Color.black.opacity(0.12), radius: 12, x: -4, y: 0)
-    }
-
-    private var bottomToolbar: some View {
-        HStack(spacing: 0) {
-            // Input mode buttons (Type, Write, Scan)
-            HStack(spacing: 0) {
-                ForEach(InputMode.allCases, id: \.self) { mode in
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            activeInputMode = mode
-                        }
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: mode.icon)
-                                .font(.system(size: 13, weight: .medium))
-                            Text(mode.rawValue)
-                                .font(.custom("Bradley Hand", size: 14))
-                        }
-                        .foregroundStyle(Color.toolbarBtnText)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(activeInputMode == mode
-                                      ? Color.toolbarBtnActiveBg
-                                      : Color.toolbarBtnBg)
-                        )
-                    }
-                    .buttonStyle(.plain)
-
-                    if mode != InputMode.allCases.last {
-                        Rectangle()
-                            .fill(Color.toolbarDivider)
-                            .frame(width: 1, height: 24)
-                    }
-                }
-            }
-            .padding(4)
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(Color.toolbarGroupBg)
-            )
-
-            Spacer()
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-        .background(Color.notebookBg)
     }
 
     // MARK: - Helpers
