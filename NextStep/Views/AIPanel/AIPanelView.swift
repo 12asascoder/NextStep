@@ -131,7 +131,7 @@ struct AIPanelView: View {
     private func formattedAIResponse(_ text: String) -> String {
         // Remove common LaTeX delimiters that DeepSeek R1 uses
         // Replace \( and \) with nothing or a slight space for better readability in Markdown
-        var formatted = text
+        let formatted = text
             .replacingOccurrences(of: "\\(", with: "")
             .replacingOccurrences(of: "\\)", with: "")
             .replacingOccurrences(of: "\\[", with: "")
