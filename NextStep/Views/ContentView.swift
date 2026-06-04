@@ -17,14 +17,12 @@ struct ContentView: View {
     private let persistence = PersistenceService.shared
 
     enum AppTab: Int, CaseIterable {
-        case home, camera, notebook, history, profile
+        case home, notebook, profile
 
         var icon: String {
             switch self {
             case .home: return "house.fill"
-            case .camera: return "camera.fill"
             case .notebook: return "book.fill"
-            case .history: return "clock.fill"
             case .profile: return "person.fill"
             }
         }
@@ -38,14 +36,10 @@ struct ContentView: View {
                     switch selectedTab {
                     case .home:
                         homeView
-                    case .camera:
-                        placeholderTab(icon: "camera.fill", title: "Camera")
                     case .notebook:
                         notebookListView
-                    case .history:
-                        placeholderTab(icon: "clock.fill", title: "History")
                     case .profile:
-                        placeholderTab(icon: "person.fill", title: "Profile")
+                        ProfileView()
                     }
                 }
                 .padding(.bottom, 80) // Space for tab bar
@@ -87,7 +81,7 @@ struct ContentView: View {
                 HStack(alignment: .top) {
 
                     Text("Hi, \(userName.isEmpty ? "Buddy" : userName)")
-                        .font(.custom("Bradley Hand", size: 24))
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.inkColor)
 
                     Spacer()
@@ -209,11 +203,11 @@ struct ContentView: View {
             // Center score
             VStack(spacing: 4) {
                 Text("\(persistence.aggregateIndependenceScore)")
-                    .font(.custom("Bradley Hand", size: 52))
+                    .font(.system(size: 52, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.inkColor)
 
                 Text("Independence Score")
-                    .font(.custom("Bradley Hand", size: 13))
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
                     .foregroundStyle(Color.inkColor.opacity(0.5))
 
                 Image(systemName: "info.circle")
@@ -263,7 +257,7 @@ struct ContentView: View {
             Text(emoji)
                 .font(.system(size: 20))
             Text(value)
-                .font(.custom("Bradley Hand", size: 22))
+                .font(.system(size: 22, weight: .bold, design: .rounded))
                 .foregroundStyle(color)
         }
         .frame(maxWidth: .infinity)
@@ -290,10 +284,10 @@ struct ContentView: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
-                        .font(.custom("Bradley Hand", size: 17))
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.inkColor)
                     Text(subtitle)
-                        .font(.custom("Bradley Hand", size: 13))
+                        .font(.system(size: 13, weight: .regular, design: .rounded))
                         .foregroundStyle(Color.inkColor.opacity(0.45))
                 }
 
@@ -319,7 +313,7 @@ struct ContentView: View {
         VStack(spacing: 0) {
             HStack(alignment: .bottom) {
                 Text("Sums")
-                    .font(.custom("Bradley Hand", size: 40))
+                    .font(.system(size: 40, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.inkColor)
                 Spacer()
                 Button(action: { showSolveNew = true }) {
@@ -327,7 +321,7 @@ struct ContentView: View {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 18))
                         Text("Solve New")
-                            .font(.custom("Bradley Hand", size: 16))
+                            .font(.system(size: 16, weight: .semibold, design: .rounded))
                     }
                     .foregroundStyle(.white)
                     .padding(.horizontal, 20)
@@ -347,7 +341,7 @@ struct ContentView: View {
                 NavigationLink(value: problem) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(problem.title)
-                            .font(.custom("Bradley Hand", size: 18))
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
                             .foregroundStyle(Color.inkColor)
                         Text(problem.statement)
                             .font(.custom("Bradley Hand", size: 15))

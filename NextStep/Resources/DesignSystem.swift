@@ -40,6 +40,9 @@ extension Color {
     /// Ruled line color on paper
     static let ruledLine         = dynamic(light: "#D9D3C6", dark: "#3A3A3C")
 
+    /// Question area background — slightly darker shade of paper
+    static let questionAreaBg    = dynamic(light: "#F5F0E5", dark: "#252528")
+
     /// Ink color for handwriting text
     static let inkColor          = dynamic(light: "#2C2820", dark: "#E8E4DD")
 

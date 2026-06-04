@@ -42,32 +42,30 @@ struct CanvasView: View {
             topNavigationBar
 
             // ── Main Content Area ──
-            ZStack {
+            ZStack(alignment: .trailing) {
                 // Warm cream background
                 Color.notebookBg
                     .ignoresSafeArea()
 
-                HStack(spacing: 0) {
-                    // Paper card area
-                    paperCanvasArea
-                        .padding(.horizontal, 16)
+                // Paper card area (always full width)
+                paperCanvasArea
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+
+                // AI Panel (overlays on the canvas, aligned trailing)
+                if isShowingAIPanel {
+                    aiInlinePanel
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                        .padding(.trailing, 16)
                         .padding(.vertical, 12)
+                }
 
-                    // AI Panel (inline, same blue card format) — shown when AI button is tapped
-                    if isShowingAIPanel {
-                        aiInlinePanel
-                            .transition(.move(edge: .trailing).combined(with: .opacity))
-                            .padding(.trailing, 16)
-                            .padding(.vertical, 12)
-                    }
-
-                    // AI Hint Card (floating on the right when visible)
-                    if showAIHintCard && !isShowingAIPanel {
-                        aiHintCardPanel
-                            .transition(.move(edge: .trailing).combined(with: .opacity))
-                            .padding(.trailing, 16)
-                            .padding(.vertical, 12)
-                    }
+                // AI Hint Card (overlays on the canvas when visible)
+                if showAIHintCard && !isShowingAIPanel {
+                    aiHintCardPanel
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                        .padding(.trailing, 16)
+                        .padding(.vertical, 12)
                 }
             }
 
@@ -210,14 +208,27 @@ struct CanvasView: View {
                 // Question text in handwriting style
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
-                        // Question statement
-                        Text(viewModel.problem.statement)
-                            .font(.custom("Bradley Hand", size: 19))
-                            .foregroundStyle(Color.inkColor)
-                            .lineSpacing(6)
-                            .padding(.top, 24)
-                            .padding(.horizontal, 24)
-                            .padding(.bottom, 16)
+                        // Question statement — distinct shade background
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(viewModel.problem.statement.isEmpty ? "Write your question here…" : viewModel.problem.statement)
+                                .font(.custom("Bradley Hand", size: 19))
+                                .foregroundStyle(viewModel.problem.statement.isEmpty ? Color.inkColor.opacity(0.35) : Color.inkColor)
+                                .lineSpacing(6)
+                                .padding(.vertical, 20)
+                                .padding(.horizontal, 24)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(Color.questionAreaBg)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .stroke(Color.paperBorder.opacity(0.5), lineWidth: 0.5)
+                        )
+                        .padding(.horizontal, 12)
+                        .padding(.top, 12)
+                        .padding(.bottom, 8)
 
                         // Solution area
                         if !viewModel.aiPanelHint.isEmpty {
@@ -335,6 +346,7 @@ struct CanvasView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(Color.hintCardBorder, lineWidth: 0.5)
         )
+        .shadow(color: Color.black.opacity(0.12), radius: 12, x: -4, y: 0)
     }
 
     // MARK: - Inline AI Panel (same blue card format as hint card)
@@ -490,9 +502,8 @@ struct CanvasView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(Color.hintCardBorder, lineWidth: 0.5)
         )
+        .shadow(color: Color.black.opacity(0.12), radius: 12, x: -4, y: 0)
     }
-
-    // MARK: - Bottom Toolbar
 
     private var bottomToolbar: some View {
         HStack(spacing: 0) {
