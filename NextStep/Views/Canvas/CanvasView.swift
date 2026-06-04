@@ -216,7 +216,7 @@ struct CanvasView: View {
                                 .lineSpacing(6)
                                 .padding(.vertical, 20)
                                 .padding(.horizontal, 24)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .frame(maxWidth: .infinity, minHeight: 120, alignment: .topLeading)
                         }
                         .background(
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -547,23 +547,6 @@ struct CanvasView: View {
             )
 
             Spacer()
-
-            // Solve button
-            Button(action: {
-                // Trigger AI solve
-                viewModel.requestAI(type: "next")
-            }) {
-                Text("Solve")
-                    .font(.custom("Bradley Hand", size: 15))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color.solveBtnBg)
-                    )
-            }
-            .buttonStyle(.plain)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
