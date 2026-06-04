@@ -14,7 +14,7 @@ struct CanvasView: View {
     @Environment(\.dismiss) private var dismiss
 
     // Local UI state
-    @State private var isShowingAIPopup = false
+    @State private var isShowingAIPanel = false
     @State private var isEditingQuestion = false
     @State private var showSubjectPicker = false
     @State private var selectedSubject: String = ""
@@ -53,8 +53,16 @@ struct CanvasView: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
 
+                    // AI Panel (inline, same blue card format) — shown when AI button is tapped
+                    if isShowingAIPanel {
+                        aiInlinePanel
+                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                            .padding(.trailing, 16)
+                            .padding(.vertical, 12)
+                    }
+
                     // AI Hint Card (floating on the right when visible)
-                    if showAIHintCard {
+                    if showAIHintCard && !isShowingAIPanel {
                         aiHintCardPanel
                             .transition(.move(edge: .trailing).combined(with: .opacity))
                             .padding(.trailing, 16)
@@ -82,11 +90,7 @@ struct CanvasView: View {
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $isShowingAIPopup) {
-            AIPanelView(viewModel: viewModel)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
-        }
+        // AI panel is now shown inline — no sheet needed
         .onChange(of: viewModel.aiPanelHint) { newHint in
             if !newHint.isEmpty {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
@@ -110,11 +114,11 @@ struct CanvasView: View {
             Button(action: { dismiss() }) {
                 HStack(spacing: 8) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.custom("Bradley Hand", size: 15))
                         .foregroundStyle(Color.navText)
 
                     Text(viewModel.problem.title)
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.custom("Bradley Hand", size: 17))
                         .foregroundStyle(Color.navText)
                 }
                 .padding(.horizontal, 14)
@@ -131,7 +135,7 @@ struct CanvasView: View {
             // Choose Subject button
             Button(action: { showSubjectPicker.toggle() }) {
                 Text(selectedSubject.isEmpty ? "Choose Subject" : selectedSubject)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.custom("Bradley Hand", size: 14))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 9)
@@ -174,7 +178,7 @@ struct CanvasView: View {
                 }) {
                     HStack {
                         Text(subject)
-                            .font(.system(size: 15, weight: .medium))
+                            .font(.custom("Bradley Hand", size: 15))
                             .foregroundStyle(Color.textPrimary)
                         Spacer()
                         if selectedSubject == subject {
@@ -259,12 +263,14 @@ struct CanvasView: View {
 
             // AI Hint Floating Button (top-right of paper card)
             Button(action: {
-                if showAIHintCard {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                    if isShowingAIPanel {
+                        isShowingAIPanel = false
+                    } else if showAIHintCard {
                         showAIHintCard = false
+                    } else {
+                        isShowingAIPanel = true
                     }
-                } else {
-                    isShowingAIPopup = true
                 }
             }) {
                 ZStack {
@@ -291,7 +297,7 @@ struct CanvasView: View {
             // Header
             HStack {
                 Text("Next Step: Verify relationships")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.custom("Bradley Hand", size: 14))
                     .foregroundStyle(Color.hintTitle)
                 Spacer()
 
@@ -312,11 +318,166 @@ struct CanvasView: View {
             // Hint content
             ScrollView {
                 Text(LocalizedStringKey(formatHintContent(viewModel.aiPanelHint)))
-                    .font(.system(size: 13, weight: .regular))
+                    .font(.custom("Bradley Hand", size: 13))
                     .foregroundStyle(Color.hintText)
                     .lineSpacing(4)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
+        }
+        .padding(16)
+        .frame(width: 280)
+        .frame(maxHeight: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.hintCardBg)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.hintCardBorder, lineWidth: 0.5)
+        )
+    }
+
+    // MARK: - Inline AI Panel (same blue card format as hint card)
+
+    private var aiInlinePanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header
+            HStack {
+                Text("AI Assistant")
+                    .font(.custom("Bradley Hand", size: 16))
+                    .foregroundStyle(Color.hintTitle)
+                Spacer()
+
+                // Close button
+                Button(action: {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                        isShowingAIPanel = false
+                    }
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(Color.hintTitle.opacity(0.5))
+                        .padding(6)
+                        .background(Circle().fill(Color.hintTitle.opacity(0.1)))
+                }
+                .buttonStyle(.plain)
+            }
+
+            // Model badge
+            HStack {
+                Text("DeepSeek R1")
+                    .font(.custom("Bradley Hand", size: 12))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(Color.accentBlue.opacity(0.15))
+                    .foregroundStyle(Color.accentBlue)
+                    .clipShape(Capsule())
+
+                Spacer()
+
+                Text("Hints: \(viewModel.hintsUsed)")
+                    .font(.custom("Bradley Hand", size: 12))
+                    .foregroundStyle(Color.hintText.opacity(0.7))
+            }
+
+            Divider()
+                .background(Color.hintCardBorder)
+
+            // Content area
+            if viewModel.cooldownRemaining > 0 {
+                VStack(spacing: 8) {
+                    Image(systemName: "timer")
+                        .font(.system(size: 24))
+                        .foregroundStyle(Color.accentAmber)
+                    Text("Take a moment to think.")
+                        .font(.custom("Bradley Hand", size: 14))
+                        .foregroundStyle(Color.hintTitle)
+                    Text("Available in \(viewModel.cooldownRemaining)s")
+                        .font(.custom("Bradley Hand", size: 16))
+                        .foregroundStyle(Color.accentAmber)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+            } else if viewModel.isLoadingAI {
+                VStack(spacing: 10) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                        .tint(Color.accentBlue)
+                    Text("Thinking…")
+                        .font(.custom("Bradley Hand", size: 14))
+                        .foregroundStyle(Color.hintText)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if !viewModel.aiPanelHint.isEmpty {
+                ScrollView {
+                    Text(LocalizedStringKey(formatHintContent(viewModel.aiPanelHint)))
+                        .font(.custom("Bradley Hand", size: 13))
+                        .foregroundStyle(Color.hintText)
+                        .lineSpacing(4)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            } else {
+                VStack(spacing: 10) {
+                    Image(systemName: "brain.head.profile")
+                        .font(.system(size: 32))
+                        .foregroundStyle(Color.hintText.opacity(0.3))
+                    Text("Need help? Tap below.")
+                        .font(.custom("Bradley Hand", size: 14))
+                        .foregroundStyle(Color.hintText)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+            }
+
+            Spacer()
+
+            // Action buttons
+            VStack(spacing: 8) {
+                Button { viewModel.requestAI(type: "hint") } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 12))
+                        Text("Give me a Hint")
+                            .font(.custom("Bradley Hand", size: 14))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.accentBlue)
+                    .foregroundStyle(.white)
+                    .cornerRadius(10)
+                }
+
+                Button { viewModel.requestAI(type: "next") } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "arrow.right.circle")
+                            .font(.system(size: 12))
+                        Text("Next Step")
+                            .font(.custom("Bradley Hand", size: 14))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.accentGreen)
+                    .foregroundStyle(.white)
+                    .cornerRadius(10)
+                }
+
+                Button { viewModel.requestFullSolution() } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "doc.text.magnifyingglass")
+                            .font(.system(size: 12))
+                        Text("Full Solution")
+                            .font(.custom("Bradley Hand", size: 14))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.accentAmber)
+                    .foregroundStyle(.white)
+                    .cornerRadius(10)
+                }
+            }
+            .buttonStyle(.plain)
+            .disabled(viewModel.isLoadingAI || viewModel.cooldownRemaining > 0)
+            .opacity((viewModel.isLoadingAI || viewModel.cooldownRemaining > 0) ? 0.5 : 1)
         }
         .padding(16)
         .frame(width: 280)
@@ -347,7 +508,7 @@ struct CanvasView: View {
                             Image(systemName: mode.icon)
                                 .font(.system(size: 13, weight: .medium))
                             Text(mode.rawValue)
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.custom("Bradley Hand", size: 14))
                         }
                         .foregroundStyle(Color.toolbarBtnText)
                         .padding(.horizontal, 20)
@@ -382,7 +543,7 @@ struct CanvasView: View {
                 viewModel.requestAI(type: "next")
             }) {
                 Text("Solve")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.custom("Bradley Hand", size: 15))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 10)
@@ -434,13 +595,13 @@ struct QuestionEditView: View {
                     .foregroundStyle(Color.textSecondary)
                 Spacer()
                 Text("Edit Question")
-                    .font(NSFont.heading)
+                    .font(.custom("Bradley Hand", size: 18))
                     .foregroundStyle(Color.textPrimary)
                 Spacer()
                 Button("Save") {
                     onSave(statement)
                 }
-                .font(.system(size: 16, weight: .semibold))
+                .font(.custom("Bradley Hand", size: 16))
                 .foregroundStyle(Color.accentBlue)
                 .disabled(statement.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
@@ -448,7 +609,7 @@ struct QuestionEditView: View {
             .padding(.top, 20)
 
             TextEditor(text: $statement)
-                .font(.system(size: 20, weight: .regular, design: .monospaced))
+                .font(.custom("Bradley Hand", size: 20))
                 .padding(12)
                 .background(Color(UIColor.secondarySystemBackground))
                 .cornerRadius(12)

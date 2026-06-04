@@ -9,11 +9,11 @@ struct AIPanelView: View {
             VStack(spacing: 8) {
                 HStack {
                     Text("AI Assistant")
-                        .font(NSFont.title)
+                        .font(.custom("Bradley Hand", size: 24))
                         .foregroundStyle(Color.textPrimary)
                     Spacer()
                     Text("DeepSeek R1")
-                        .font(NSFont.caption)
+                        .font(.custom("Bradley Hand", size: 13))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
                         .background(Color.accentBlue.opacity(0.15))
@@ -23,11 +23,11 @@ struct AIPanelView: View {
 
                 HStack {
                     Text("Independence: \(viewModel.independenceScore)%")
-                        .font(NSFont.caption)
+                        .font(.custom("Bradley Hand", size: 13))
                         .foregroundStyle(viewModel.independenceScore > 50 ? Color.accentGreen : Color.accentAmber)
                     Spacer()
                     Text("Hints used: \(viewModel.hintsUsed)")
-                        .font(NSFont.caption)
+                        .font(.custom("Bradley Hand", size: 13))
                         .foregroundStyle(Color.textSecondary)
                 }
             }
@@ -41,10 +41,10 @@ struct AIPanelView: View {
                         .font(.system(size: 32))
                         .foregroundStyle(Color.accentAmber)
                     Text("Take a moment to think.")
-                        .font(NSFont.body)
+                        .font(.custom("Bradley Hand", size: 16))
                         .foregroundStyle(Color.textPrimary)
                     Text("Available in \(viewModel.cooldownRemaining)s")
-                        .font(NSFont.heading)
+                        .font(.custom("Bradley Hand", size: 18))
                         .foregroundStyle(Color.accentAmber)
                 }
                 .padding(24)
@@ -55,17 +55,17 @@ struct AIPanelView: View {
                 VStack(spacing: 16) {
                     ProgressView().scaleEffect(1.5).tint(Color.accentBlue)
                     Text("DeepSeek R1 is thinking…")
-                        .font(NSFont.body)
+                        .font(.custom("Bradley Hand", size: 16))
                         .foregroundStyle(Color.textSecondary)
                     Text("The reasoning model may take a moment.")
-                        .font(NSFont.caption)
+                        .font(.custom("Bradley Hand", size: 13))
                         .foregroundStyle(Color.textSecondary.opacity(0.7))
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if !viewModel.aiPanelHint.isEmpty {
                 ScrollView {
                     Text(LocalizedStringKey(formattedAIResponse(viewModel.aiPanelHint)))
-                        .font(NSFont.body)
+                        .font(.custom("Bradley Hand", size: 16))
                         .padding(16)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.paperCard)
@@ -79,10 +79,10 @@ struct AIPanelView: View {
                         .font(.system(size: 48))
                         .foregroundStyle(Color.textSecondary.opacity(0.3))
                     Text("Need help? Tap a button below.")
-                        .font(NSFont.body)
+                        .font(.custom("Bradley Hand", size: 16))
                         .foregroundStyle(Color.textSecondary)
                     Text("Steps are validated automatically on the canvas.")
-                        .font(NSFont.caption)
+                        .font(.custom("Bradley Hand", size: 13))
                         .foregroundStyle(Color.textSecondary.opacity(0.5))
                 }
                 Spacer()

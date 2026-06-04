@@ -87,7 +87,7 @@ struct ContentView: View {
                 HStack(alignment: .top) {
 
                     Text("Hi, \(userName.isEmpty ? "Buddy" : userName)")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(.custom("Bradley Hand", size: 24))
                         .foregroundStyle(Color.inkColor)
 
                     Spacer()
@@ -209,11 +209,11 @@ struct ContentView: View {
             // Center score
             VStack(spacing: 4) {
                 Text("\(persistence.aggregateIndependenceScore)")
-                    .font(.system(size: 52, weight: .bold))
+                    .font(.custom("Bradley Hand", size: 52))
                     .foregroundStyle(Color.inkColor)
 
                 Text("Independence Score")
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.custom("Bradley Hand", size: 13))
                     .foregroundStyle(Color.inkColor.opacity(0.5))
 
                 Image(systemName: "info.circle")
@@ -263,7 +263,7 @@ struct ContentView: View {
             Text(emoji)
                 .font(.system(size: 20))
             Text(value)
-                .font(.system(size: 22, weight: .bold))
+                .font(.custom("Bradley Hand", size: 22))
                 .foregroundStyle(color)
         }
         .frame(maxWidth: .infinity)
@@ -290,10 +290,10 @@ struct ContentView: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
-                        .font(.system(size: 17, weight: .bold))
+                        .font(.custom("Bradley Hand", size: 17))
                         .foregroundStyle(Color.inkColor)
                     Text(subtitle)
-                        .font(.system(size: 13, weight: .regular))
+                        .font(.custom("Bradley Hand", size: 13))
                         .foregroundStyle(Color.inkColor.opacity(0.45))
                 }
 
@@ -319,7 +319,7 @@ struct ContentView: View {
         VStack(spacing: 0) {
             HStack(alignment: .bottom) {
                 Text("Sums")
-                    .font(.system(size: 40, weight: .bold, design: .serif))
+                    .font(.custom("Bradley Hand", size: 40))
                     .foregroundStyle(Color.inkColor)
                 Spacer()
                 Button(action: { showSolveNew = true }) {
@@ -327,7 +327,7 @@ struct ContentView: View {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 18))
                         Text("Solve New")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.custom("Bradley Hand", size: 16))
                     }
                     .foregroundStyle(.white)
                     .padding(.horizontal, 20)
@@ -347,7 +347,7 @@ struct ContentView: View {
                 NavigationLink(value: problem) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(problem.title)
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.custom("Bradley Hand", size: 18))
                             .foregroundStyle(Color.inkColor)
                         Text(problem.statement)
                             .font(.custom("Bradley Hand", size: 15))

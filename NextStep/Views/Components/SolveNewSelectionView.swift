@@ -9,7 +9,6 @@ struct SolveNewSelectionView: View {
     
     // Internal routing state
     @State private var showingScanner = false
-    @State private var showingWriteCanvas = false
     @State private var showingReview = false
     @State private var showingMultiReview = false
     
@@ -22,11 +21,11 @@ struct SolveNewSelectionView: View {
         NavigationStack {
             VStack(spacing: 32) {
                 Text("Solve a New Problem")
-                    .font(.system(size: 32, weight: .bold, design: .serif))
+                    .font(.custom("Bradley Hand", size: 32))
                     .padding(.top, 40)
                 
                 Text("How would you like to input the question?")
-                    .font(.title3)
+                    .font(.custom("Bradley Hand", size: 18))
                     .foregroundColor(.secondary)
                 
                 VStack(spacing: 20) {
@@ -36,9 +35,9 @@ struct SolveNewSelectionView: View {
                                 .font(.title)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Scan Document")
-                                    .font(.title2)
+                                    .font(.custom("Bradley Hand", size: 22))
                                 Text("Auto-detects multiple questions")
-                                    .font(.caption)
+                                    .font(.custom("Bradley Hand", size: 13))
                                     .opacity(0.8)
                             }
                         }
@@ -55,15 +54,25 @@ struct SolveNewSelectionView: View {
                         .cornerRadius(16)
                     }
                     
-                    Button(action: { showingWriteCanvas = true }) {
+                    Button(action: {
+                        // Go directly to CanvasView — no intermediate WriteQuestionView
+                        let newProblem = MathProblem(
+                            title: "Custom Problem",
+                            statement: "",
+                            difficulty: "10th Grade",
+                            topic: "General Math"
+                        )
+                        onProblemCreated(newProblem)
+                        dismiss()
+                    }) {
                         HStack(spacing: 12) {
                             Image(systemName: "pencil.and.outline")
                                 .font(.title)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Write Manually")
-                                    .font(.title2)
+                                    .font(.custom("Bradley Hand", size: 22))
                                 Text("Draw or type your question")
-                                    .font(.caption)
+                                    .font(.custom("Bradley Hand", size: 13))
                                     .opacity(0.8)
                             }
                         }
@@ -88,7 +97,7 @@ struct SolveNewSelectionView: View {
                             .scaleEffect(1.3)
                             .tint(Color.accentBlue)
                         Text("Scanning & extracting questions…")
-                            .font(NSFont.body)
+                            .font(.custom("Bradley Hand", size: 16))
                             .foregroundColor(.secondary)
                     }
                     .padding(.top, 32)
@@ -110,21 +119,6 @@ struct SolveNewSelectionView: View {
                     processScannedImage(image)
                 }
                 .ignoresSafeArea()
-            }
-            .fullScreenCover(isPresented: $showingWriteCanvas) {
-                WriteQuestionView(onExtracted: { text in
-                    self.showingWriteCanvas = false
-                    let newProblem = MathProblem(
-                        title: "Custom Problem",
-                        statement: text,
-                        difficulty: "10th Grade",
-                        topic: "General Math"
-                    )
-                    onProblemCreated(newProblem)
-                    dismiss()
-                }, onCancel: {
-                    self.showingWriteCanvas = false
-                })
             }
             // Single question review (from scanner single-question scan)
             .fullScreenCover(isPresented: $showingReview) {
