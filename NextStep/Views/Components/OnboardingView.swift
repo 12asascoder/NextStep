@@ -167,66 +167,25 @@ struct OnboardingView: View {
                     .transition(.scale(scale: 0.6).combined(with: .opacity))
             }
 
-            // Colorful face circles
+            // Illustration
             if showCircles {
-                ZStack {
-                    // Red circle - top left
-                    FaceCircle(
-                        color: Color.faceRed,
-                        faceType: .round,
-                        size: 110
-                    )
-                    .offset(
-                        x: -140,
-                        y: circleFloat ? -20 : -30
-                    )
-
-                    // Blue circle - top right
-                    FaceCircle(
-                        color: Color.faceBlue,
-                        faceType: .happy,
-                        size: 120
-                    )
-                    .offset(
-                        x: 120,
-                        y: circleFloat ? -50 : -40
-                    )
-
-                    // Yellow circle - center
-                    FaceCircle(
-                        color: Color.faceYellow,
-                        faceType: .smile,
-                        size: 100
-                    )
-                    .offset(
-                        x: 0,
-                        y: circleFloat ? 20 : 10
-                    )
-
-                    // Pink circle - bottom left
-                    FaceCircle(
-                        color: Color.facePink,
-                        faceType: .curly,
-                        size: 95
-                    )
-                    .offset(
-                        x: -130,
-                        y: circleFloat ? 80 : 90
-                    )
-
-                    // Teal/green circle - bottom right
-                    FaceCircle(
-                        color: Color.faceTeal,
-                        faceType: .glasses,
-                        size: 115
-                    )
-                    .offset(
-                        x: 155,
-                        y: circleFloat ? 100 : 110
-                    )
+                Group {
+                    if let uiImage = UIImage(contentsOfFile: "/Users/ayushsharma/.gemini/antigravity-ide/brain/6bb68c58-4e53-4f4c-9287-c28ef6b49319/welcome_illustration_1780641088314.png") {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 380)
+                            .blendMode(.multiply)
+                            .padding(.top, 20)
+                    } else {
+                        Image(systemName: "book.pages")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 200)
+                            .foregroundColor(.blue)
+                    }
                 }
-                .frame(height: 260)
-                .padding(.top, 20)
                 .transition(.scale(scale: 0.5).combined(with: .opacity))
             }
 
@@ -241,7 +200,7 @@ struct OnboardingView: View {
                         .multilineTextAlignment(.center)
                         .lineSpacing(4)
 
-                    Text("An AI-powered platform that helps you learn by guiding\nyour thinking–not just giving answers.")
+                    Text("An AI-powered platform that helps you learn by guiding\nyour thinking.")
                         .font(.system(size: 15, weight: .regular))
                         .foregroundStyle(Color.inkColor.opacity(0.5))
                         .multilineTextAlignment(.center)
@@ -330,227 +289,4 @@ struct OnboardingView: View {
     }
 }
 
-// MARK: - Face Circle Component
 
-/// A colorful circle with a hand-drawn face doodle on it.
-struct FaceCircle: View {
-    let color: Color
-    let faceType: FaceType
-    var size: CGFloat = 100
-
-    enum FaceType {
-        case round, happy, smile, curly, glasses
-    }
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(color)
-                .frame(width: size, height: size)
-
-            // Hand-drawn face using Canvas/Path
-            faceOverlay
-                .frame(width: size * 0.6, height: size * 0.6)
-        }
-    }
-
-    @ViewBuilder
-    private var faceOverlay: some View {
-        switch faceType {
-        case .round:
-            // Simple round eyes and mouth
-            GeometryReader { geo in
-                let w = geo.size.width
-                let h = geo.size.height
-                ZStack {
-                    // Eyes
-                    Circle()
-                        .fill(Color.black)
-                        .frame(width: w * 0.12, height: w * 0.12)
-                        .offset(x: -w * 0.15, y: -h * 0.1)
-                    Circle()
-                        .fill(Color.black)
-                        .frame(width: w * 0.12, height: w * 0.12)
-                        .offset(x: w * 0.15, y: -h * 0.1)
-                    // Mouth - little o
-                    Circle()
-                        .stroke(Color.black, lineWidth: 2)
-                        .frame(width: w * 0.15, height: w * 0.15)
-                        .offset(y: h * 0.15)
-                    // Hair squiggle on top
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.35, y: -h * 0.15))
-                        path.addCurve(
-                            to: CGPoint(x: w * 0.5, y: -h * 0.3),
-                            control1: CGPoint(x: w * 0.3, y: -h * 0.35),
-                            control2: CGPoint(x: w * 0.55, y: -h * 0.35)
-                        )
-                    }
-                    .stroke(Color.black, lineWidth: 2)
-                }
-            }
-
-        case .happy:
-            // Big smile face
-            GeometryReader { geo in
-                let w = geo.size.width
-                let h = geo.size.height
-                ZStack {
-                    // Eyes - curved lines
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.25, y: h * 0.3))
-                        path.addQuadCurve(
-                            to: CGPoint(x: w * 0.4, y: h * 0.3),
-                            control: CGPoint(x: w * 0.325, y: h * 0.2)
-                        )
-                    }
-                    .stroke(Color.black, lineWidth: 2.5)
-
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.6, y: h * 0.3))
-                        path.addQuadCurve(
-                            to: CGPoint(x: w * 0.75, y: h * 0.3),
-                            control: CGPoint(x: w * 0.675, y: h * 0.2)
-                        )
-                    }
-                    .stroke(Color.black, lineWidth: 2.5)
-
-                    // Big smile
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.2, y: h * 0.55))
-                        path.addQuadCurve(
-                            to: CGPoint(x: w * 0.8, y: h * 0.55),
-                            control: CGPoint(x: w * 0.5, y: h * 0.85)
-                        )
-                    }
-                    .stroke(Color.black, lineWidth: 2.5)
-                }
-            }
-
-        case .smile:
-            // Simple smiley
-            GeometryReader { geo in
-                let w = geo.size.width
-                let h = geo.size.height
-                ZStack {
-                    // Eyes - dots
-                    Circle()
-                        .fill(Color.black)
-                        .frame(width: w * 0.1, height: w * 0.1)
-                        .offset(x: -w * 0.13, y: -h * 0.08)
-                    Circle()
-                        .fill(Color.black)
-                        .frame(width: w * 0.1, height: w * 0.1)
-                        .offset(x: w * 0.13, y: -h * 0.08)
-                    // Curved smile
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.3, y: h * 0.55))
-                        path.addQuadCurve(
-                            to: CGPoint(x: w * 0.7, y: h * 0.55),
-                            control: CGPoint(x: w * 0.5, y: h * 0.75)
-                        )
-                    }
-                    .stroke(Color.black, lineWidth: 2)
-                    // Squiggly hair
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.3, y: h * 0.0))
-                        path.addCurve(
-                            to: CGPoint(x: w * 0.5, y: -h * 0.1),
-                            control1: CGPoint(x: w * 0.35, y: -h * 0.15),
-                            control2: CGPoint(x: w * 0.45, y: -h * 0.05)
-                        )
-                    }
-                    .stroke(Color.black, lineWidth: 1.5)
-                }
-            }
-
-        case .curly:
-            // Curly hair face
-            GeometryReader { geo in
-                let w = geo.size.width
-                let h = geo.size.height
-                ZStack {
-                    // Curly hair on top
-                    ForEach(0..<3, id: \.self) { i in
-                        Circle()
-                            .stroke(Color.black, lineWidth: 2)
-                            .frame(width: w * 0.2, height: w * 0.2)
-                            .offset(
-                                x: CGFloat(i - 1) * w * 0.18,
-                                y: -h * 0.25
-                            )
-                    }
-                    // Eyes
-                    Circle()
-                        .fill(Color.black)
-                        .frame(width: w * 0.09, height: w * 0.09)
-                        .offset(x: -w * 0.12, y: -h * 0.02)
-                    Circle()
-                        .fill(Color.black)
-                        .frame(width: w * 0.09, height: w * 0.09)
-                        .offset(x: w * 0.12, y: -h * 0.02)
-                    // Smile
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.35, y: h * 0.55))
-                        path.addQuadCurve(
-                            to: CGPoint(x: w * 0.65, y: h * 0.55),
-                            control: CGPoint(x: w * 0.5, y: h * 0.7)
-                        )
-                    }
-                    .stroke(Color.black, lineWidth: 2)
-                }
-            }
-
-        case .glasses:
-            // Face with glasses
-            GeometryReader { geo in
-                let w = geo.size.width
-                let h = geo.size.height
-                ZStack {
-                    // Glasses frames
-                    Circle()
-                        .stroke(Color.black, lineWidth: 2)
-                        .frame(width: w * 0.25, height: w * 0.25)
-                        .offset(x: -w * 0.12, y: -h * 0.05)
-                    Circle()
-                        .stroke(Color.black, lineWidth: 2)
-                        .frame(width: w * 0.25, height: w * 0.25)
-                        .offset(x: w * 0.12, y: -h * 0.05)
-                    // Bridge
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.42, y: h * 0.42))
-                        path.addLine(to: CGPoint(x: w * 0.58, y: h * 0.42))
-                    }
-                    .stroke(Color.black, lineWidth: 2)
-                    // Pupils
-                    Circle()
-                        .fill(Color.black)
-                        .frame(width: w * 0.06, height: w * 0.06)
-                        .offset(x: -w * 0.12, y: -h * 0.05)
-                    Circle()
-                        .fill(Color.black)
-                        .frame(width: w * 0.06, height: w * 0.06)
-                        .offset(x: w * 0.12, y: -h * 0.05)
-                    // Mouth - wavy
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.3, y: h * 0.65))
-                        path.addCurve(
-                            to: CGPoint(x: w * 0.7, y: h * 0.65),
-                            control1: CGPoint(x: w * 0.4, y: h * 0.75),
-                            control2: CGPoint(x: w * 0.6, y: h * 0.55)
-                        )
-                    }
-                    .stroke(Color.black, lineWidth: 2)
-                    // Hair spikes
-                    Path { path in
-                        path.move(to: CGPoint(x: w * 0.65, y: h * 0.05))
-                        path.addLine(to: CGPoint(x: w * 0.72, y: -h * 0.1))
-                        path.move(to: CGPoint(x: w * 0.7, y: h * 0.1))
-                        path.addLine(to: CGPoint(x: w * 0.8, y: -h * 0.02))
-                    }
-                    .stroke(Color.black, lineWidth: 2)
-                }
-            }
-        }
-    }
-}

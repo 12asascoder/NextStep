@@ -4,7 +4,7 @@ import SwiftUI
 
 private let availableSubjects = [
     "Mathematics", "Physics", "Chemistry", "Biology",
-    "Computer Science", "Economics", "English"
+    "Computer Science", "Economics", "English", "Other (Custom)"
 ]
 
 // MARK: - Canvas View (Notebook Style)
@@ -20,6 +20,8 @@ struct CanvasView: View {
     @State private var selectedSubject: String = ""
     @State private var showAIHintCard = false
     @State private var isSidebarVisible = false
+    @State private var showCustomSubjectAlert = false
+    @State private var tempCustomSubject = ""
 
     var body: some View {
         VStack(spacing: 0) {
@@ -56,6 +58,17 @@ struct CanvasView: View {
         }
         .background(Color.notebookBg.ignoresSafeArea())
         .navigationBarHidden(true)
+        .alert("Custom Subject", isPresented: $showCustomSubjectAlert) {
+            TextField("Enter custom subject", text: $tempCustomSubject)
+            Button("OK") {
+                if !tempCustomSubject.isEmpty {
+                    selectedSubject = tempCustomSubject
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                tempCustomSubject = ""
+            }
+        }
         .sheet(isPresented: $isEditingQuestion) {
             QuestionEditView(
                 statement: viewModel.problem.statement,
@@ -153,15 +166,21 @@ struct CanvasView: View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(availableSubjects, id: \.self) { subject in
                 Button(action: {
-                    selectedSubject = subject
-                    showSubjectPicker = false
+                    if subject == "Other (Custom)" {
+                        showSubjectPicker = false
+                        tempCustomSubject = "" // Clear previous input
+                        showCustomSubjectAlert = true
+                    } else {
+                        selectedSubject = subject
+                        showSubjectPicker = false
+                    }
                 }) {
                     HStack {
                         Text(subject)
                             .font(.custom("Bradley Hand", size: 15))
                             .foregroundStyle(Color.textPrimary)
                         Spacer()
-                        if selectedSubject == subject {
+                        if selectedSubject == subject || (subject == "Other (Custom)" && !availableSubjects.contains(selectedSubject) && !selectedSubject.isEmpty) {
                             Image(systemName: "checkmark")
                                 .font(.system(size: 13, weight: .bold))
                                 .foregroundStyle(Color.accentBlue)

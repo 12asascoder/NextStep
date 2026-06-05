@@ -13,10 +13,9 @@ struct ContentView: View {
     @State private var showSolveNew = false
     @State private var selectedTab: AppTab = .home
     @AppStorage("nextstep_userName") private var userName: String = ""
-    @AppStorage("hasSeenWelcome") private var hasSeenWelcome: Bool = false
-    @State private var showWelcome: Bool = false
     @State private var showAnalysis: Bool = false
     @State private var showProfile: Bool = false
+    @State private var userProblems: [MathProblem] = []
 
     private let persistence = PersistenceService.shared
 
@@ -52,14 +51,6 @@ struct ContentView: View {
                 customTabBar
             }
             .ignoresSafeArea(.keyboard)
-            .onAppear {
-                if !hasSeenWelcome {
-                    showWelcome = true
-                }
-            }
-            .fullScreenCover(isPresented: $showWelcome) {
-                WelcomeView(isPresented: $showWelcome, hasSeenWelcome: $hasSeenWelcome)
-            }
             .fullScreenCover(isPresented: $showAnalysis) {
                 AnalysisView()
             }
@@ -322,33 +313,48 @@ struct ContentView: View {
             .padding(.top, 24)
             .padding(.bottom, 24)
 
-            List(MathProblem.samples) { problem in
-                NavigationLink(value: problem) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(problem.title)
-                            .font(.system(size: 18, weight: .semibold, design: .rounded))
-                            .foregroundStyle(Color.inkColor)
-                        Text(problem.statement)
-                            .font(.custom("Bradley Hand", size: 15))
-                            .lineLimit(2)
-                            .foregroundStyle(Color.textSecondary)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(Color.paperWhite)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(Color.paperBorder, lineWidth: 0.5)
-                    )
+            if userProblems.isEmpty {
+                VStack(spacing: 16) {
+                    Spacer()
+                    Image(systemName: "tray")
+                        .font(.system(size: 48))
+                        .foregroundColor(Color.inkColor.opacity(0.2))
+                    Text("No problems solved yet")
+                        .font(.system(size: 18, weight: .medium, design: .rounded))
+                        .foregroundColor(Color.inkColor.opacity(0.5))
+                    Spacer()
                 }
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .padding(.vertical, 6)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 60)
+            } else {
+                List(userProblems) { problem in
+                    NavigationLink(value: problem) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(problem.title)
+                                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                .foregroundStyle(Color.inkColor)
+                            Text(problem.statement)
+                                .font(.custom("Bradley Hand", size: 15))
+                                .lineLimit(2)
+                                .foregroundStyle(Color.textSecondary)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(Color.paperWhite)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .stroke(Color.paperBorder, lineWidth: 0.5)
+                        )
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .padding(.vertical, 6)
+                }
+                .listStyle(.plain)
             }
-            .listStyle(.plain)
         }
         .background(Color.welcomeBg.ignoresSafeArea())
     }
@@ -737,79 +743,6 @@ struct ProfileView: View {
         return String(name.prefix(1)).uppercased()
     }
 }
-// MARK: - Welcome View
-
-struct WelcomeView: View {
-    @Binding var isPresented: Bool
-    @Binding var hasSeenWelcome: Bool
-
-    var body: some View {
-        VStack(spacing: 0) {
-            Spacer().frame(height: 60)
-
-            // Logo
-            Text("nextstep")
-                .font(.system(size: 64, weight: .heavy, design: .default))
-                .foregroundColor(Color(red: 0.15, green: 0.15, blue: 0.15))
-                .tracking(-2)
-
-            Spacer()
-
-            // Illustration
-            if let uiImage = UIImage(contentsOfFile: "/Users/ayushsharma/.gemini/antigravity-ide/brain/6bb68c58-4e53-4f4c-9287-c28ef6b49319/welcome_illustration_1780641088314.png") {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxHeight: 300)
-                    .padding(.horizontal, 40)
-            } else {
-                Image(systemName: "book.pages")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 200)
-                    .foregroundColor(.blue)
-            }
-
-            Spacer()
-
-            // Text content
-            VStack(spacing: 16) {
-                Text("Learn smarter.\nOne step at a time.")
-                    .font(.system(size: 28, weight: .bold, design: .default))
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.black)
-
-                Text("An AI-powered platform that helps you learn by guiding\nyour thinking.")
-                    .font(.system(size: 16, weight: .regular, design: .default))
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.black.opacity(0.8))
-                    .padding(.horizontal, 40)
-            }
-
-            Spacer().frame(height: 40)
-
-            // Get Started Button
-            Button(action: {
-                withAnimation {
-                    hasSeenWelcome = true
-                    isPresented = false
-                }
-            }) {
-                Text("Get Started")
-                    .font(.system(size: 20, weight: .medium, design: .default))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
-                    .background(Color(red: 0.15, green: 0.15, blue: 0.15))
-                    .clipShape(Capsule())
-            }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 60)
-        }
-        .background(Color(red: 0.96, green: 0.94, blue: 0.88).ignoresSafeArea())
-    }
-}
-
 // MARK: - Analysis View
 
 struct AnalysisView: View {
@@ -847,13 +780,13 @@ struct AnalysisView: View {
                         .foregroundColor(.black.opacity(0.7))
                     
                     HStack(alignment: .bottom, spacing: 0) {
-                        barColumn(height: 60, label: "Mon")
-                        barColumn(height: 90, label: "Tue")
-                        barColumn(height: 30, label: "Wed")
-                        barColumn(height: 50, label: "Thur")
-                        barColumn(height: 20, label: "Fri")
-                        barColumn(height: 35, label: "Sat")
-                        barColumn(height: 80, label: "Sun")
+                        barColumn(height: 0, label: "Mon")
+                        barColumn(height: 0, label: "Tue")
+                        barColumn(height: 0, label: "Wed")
+                        barColumn(height: 0, label: "Thur")
+                        barColumn(height: 0, label: "Fri")
+                        barColumn(height: 0, label: "Sat")
+                        barColumn(height: 0, label: "Sun")
                     }
                     .frame(height: 140)
                     
@@ -878,13 +811,13 @@ struct AnalysisView: View {
                             .foregroundColor(.black.opacity(0.7))
                         
                         HStack(spacing: 16) {
-                            pieChart(colors: [Color.ringGreen, Color(red: 0.95, green: 0.4, blue: 0.4), Color.ringYellow], portions: [0.5, 0.3, 0.2])
+                            pieChart(colors: [Color.gray.opacity(0.2)], portions: [1.0])
                                 .frame(width: 100, height: 100)
                             
                             VStack(alignment: .leading, spacing: 12) {
-                                legendItem(color: Color.ringGreen, label: "Correct")
-                                legendItem(color: Color(red: 0.95, green: 0.4, blue: 0.4), label: "Incorrect")
-                                legendItem(color: Color.ringYellow, label: "Skipped")
+                                legendItem(color: Color.ringGreen, label: "Correct", value: "0%")
+                                legendItem(color: Color(red: 0.95, green: 0.4, blue: 0.4), label: "Incorrect", value: "0%")
+                                legendItem(color: Color.ringYellow, label: "Skipped", value: "0%")
                             }
                         }
                     }
@@ -901,14 +834,14 @@ struct AnalysisView: View {
                             .foregroundColor(.black.opacity(0.7))
                         
                         HStack(spacing: 16) {
-                            pieChart(colors: [Color.ringGreen, Color(red: 0.95, green: 0.4, blue: 0.6), Color.ringYellow, Color.ringBlue], portions: [0.15, 0.1, 0.45, 0.3])
+                            pieChart(colors: [Color.gray.opacity(0.2)], portions: [1.0])
                                 .frame(width: 100, height: 100)
                             
                             VStack(alignment: .leading, spacing: 8) {
-                                legendItem(color: Color.ringGreen, label: "Maths", value: "35%")
-                                legendItem(color: Color(red: 0.95, green: 0.4, blue: 0.6), label: "Bio", value: "15%")
-                                legendItem(color: Color.ringYellow, label: "Chemistry", value: "60%")
-                                legendItem(color: Color.ringBlue, label: "Calculus", value: "45%")
+                                legendItem(color: Color.ringGreen, label: "Maths", value: "0%")
+                                legendItem(color: Color(red: 0.95, green: 0.4, blue: 0.6), label: "Bio", value: "0%")
+                                legendItem(color: Color.ringYellow, label: "Chemistry", value: "0%")
+                                legendItem(color: Color.ringBlue, label: "Calculus", value: "0%")
                             }
                         }
                     }
@@ -928,7 +861,7 @@ struct AnalysisView: View {
                             Text("Recommended Next Topics")
                                 .font(.system(size: 15, weight: .bold, design: .rounded))
                                 .foregroundColor(.black.opacity(0.7))
-                            Text("Based on your recent performance, these topics are\nrecommended to help you improve faster.")
+                            Text("No data available yet. Keep solving problems to get personalized recommendations.")
                                 .font(.system(size: 10, weight: .regular))
                                 .foregroundColor(.black.opacity(0.5))
                                 .fixedSize(horizontal: false, vertical: true)
