@@ -13,17 +13,19 @@ struct ContentView: View {
     @State private var showSolveNew = false
     @State private var selectedTab: AppTab = .home
     @AppStorage("nextstep_userName") private var userName: String = ""
+    @AppStorage("hasSeenWelcome") private var hasSeenWelcome: Bool = false
+    @State private var showWelcome: Bool = false
 
     private let persistence = PersistenceService.shared
 
     enum AppTab: Int, CaseIterable {
-        case home, notebook, profile
+        case home, camera, history
 
         var icon: String {
             switch self {
-            case .home: return "house.fill"
-            case .notebook: return "book.fill"
-            case .profile: return "person.fill"
+            case .home: return "house"
+            case .camera: return "camera"
+            case .history: return "chart.pie"
             }
         }
     }
@@ -48,6 +50,14 @@ struct ContentView: View {
                 customTabBar
             }
             .ignoresSafeArea(.keyboard)
+            .onAppear {
+                if !hasSeenWelcome {
+                    showWelcome = true
+                }
+            }
+            .fullScreenCover(isPresented: $showWelcome) {
+                WelcomeView(isPresented: $showWelcome, hasSeenWelcome: $hasSeenWelcome)
+            }
             // Single problem destination
             .navigationDestination(for: MathProblem.self) { problem in
                 CanvasView(viewModel: viewModel)
@@ -114,16 +124,13 @@ struct ContentView: View {
                 .padding(.bottom, 32)
 
                 // Independence Score Ring
-                independenceScoreRing
+                streaksRing
                     .padding(.bottom, 28)
 
                 // Stats row: Streak + Time
-                HStack(spacing: 16) {
-                    statPill(systemImage: "flame.fill", value: "\(persistence.currentStreak) Days", color: Color(red: 0.85, green: 0.6, blue: 0.2))
-                    statPill(systemImage: "clock.fill", value: persistence.formattedStudyTime, color: Color(red: 0.5, green: 0.6, blue: 0.8))
-                }
-                .padding(.horizontal, 28)
-                .padding(.bottom, 20)
+                statPill(systemImage: "clock.fill", value: persistence.formattedStudyTime, color: Color(red: 0.5, green: 0.6, blue: 0.8))
+                    .padding(.horizontal, 28)
+                    .padding(.bottom, 20)
 
                 // Action cards
                 VStack(spacing: 12) {
@@ -153,43 +160,40 @@ struct ContentView: View {
 
     // MARK: - Independence Score Ring
 
-    private var independenceScoreRing: some View {
+    private var streaksRing: some View {
         ZStack {
-            // Background track
-            Circle()
-                .stroke(Color.ringTrack, lineWidth: 14)
-                .frame(width: 200, height: 200)
-
-            // Colored arc segments (mimicking the multi-subject ring)
-            arcSegment(startAngle: 15, endAngle: 85, color: Color.ringYellow, width: 200)
-            arcSegment(startAngle: 105, endAngle: 170, color: Color.ringGreen, width: 200)
-            arcSegment(startAngle: 190, endAngle: 260, color: Color.ringBlue, width: 200)
-            arcSegment(startAngle: 275, endAngle: 310, color: Color.ringYellow, width: 200)
-            arcSegment(startAngle: 325, endAngle: 355, color: Color(red: 0.76, green: 0.9, blue: 0.95), width: 200)
+            // Colored arc segments (pill style with gaps)
+            arcSegment(startAngle: 15, endAngle: 80, color: Color.ringYellow, width: 260)
+            arcSegment(startAngle: 105, endAngle: 165, color: Color.ringGreen, width: 260)
+            arcSegment(startAngle: 195, endAngle: 255, color: Color.ringBlue, width: 260)
+            arcSegment(startAngle: 280, endAngle: 310, color: Color(red: 0.95, green: 0.5, blue: 0.5), width: 260)
+            arcSegment(startAngle: 335, endAngle: 355, color: Color(red: 0.76, green: 0.9, blue: 0.95), width: 260)
 
             // Subject icons around the ring
-            subjectIcon(systemName: "calculator.fill", angle: 50, radius: 100)
-            subjectIcon(systemName: "flask.fill", angle: 137.5, radius: 100)
-            subjectIcon(systemName: "pencil", angle: 225, radius: 100)
-            subjectIcon(systemName: "pause.fill", angle: 292.5, radius: 100)
-            subjectIcon(systemName: "paragraphsign", angle: 340, radius: 100)
+            subjectIcon(systemName: "calculator.fill", angle: 47.5, radius: 130)
+            subjectIcon(systemName: "flask.fill", angle: 135, radius: 130)
+            subjectIcon(systemName: "pencil", angle: 225, radius: 130)
+            subjectIcon(systemName: "pause.fill", angle: 295, radius: 130)
+            subjectIcon(systemName: "paragraphsign", angle: 345, radius: 130)
 
             // Center score
-            VStack(spacing: 4) {
-                Text("\(persistence.aggregateIndependenceScore)")
-                    .font(.system(size: 52, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.inkColor)
+            VStack(spacing: 8) {
+                HStack(spacing: 4) {
+                    Text("\(persistence.currentStreak)")
+                        .font(.system(size: 76, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.streakOrange)
+                    Image(systemName: "flame.fill")
+                        .font(.system(size: 40))
+                        .foregroundStyle(Color.streakOrange)
+                        .offset(y: 4)
+                }
 
-                Text("Independence Score")
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color.inkColor.opacity(0.5))
-
-                Image(systemName: "info.circle")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color.inkColor.opacity(0.3))
+                Text("Streaks")
+                    .font(.system(size: 18, weight: .medium, design: .rounded))
+                    .foregroundStyle(Color.streakOrange)
             }
         }
-        .frame(height: 260)
+        .frame(height: 320)
     }
 
     // MARK: - Arc Segment
@@ -197,7 +201,7 @@ struct ContentView: View {
     private func arcSegment(startAngle: Double, endAngle: Double, color: Color, width: CGFloat) -> some View {
         Circle()
             .trim(from: normalizeAngle(startAngle), to: normalizeAngle(endAngle))
-            .stroke(color, style: StrokeStyle(lineWidth: 24, lineCap: .round))
+            .stroke(color, style: StrokeStyle(lineWidth: 28, lineCap: .round))
             .frame(width: width, height: width)
             .rotationEffect(.degrees(-90))
     }
@@ -214,7 +218,7 @@ struct ContentView: View {
         let y = sin(radians) * Double(radius)
 
         return Image(systemName: systemName)
-            .font(.system(size: 11, weight: .bold))
+            .font(.system(size: 14, weight: .bold))
             .foregroundStyle(Color.inkColor.opacity(0.5))
             .offset(x: x, y: y)
     }
@@ -222,16 +226,16 @@ struct ContentView: View {
     // MARK: - Stat Pill
 
     private func statPill(systemImage: String, value: String, color: Color) -> some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             Image(systemName: systemImage)
-                .font(.system(size: 20, weight: .bold))
+                .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(color)
             Text(value)
-                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .font(.system(size: 26, weight: .bold, design: .rounded))
                 .foregroundStyle(color)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 18)
+        .padding(.vertical, 24)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(Color.paperWhite)
@@ -246,25 +250,25 @@ struct ContentView: View {
 
     private func actionCard(icon: String, title: String, subtitle: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: 16) {
+            HStack(spacing: 18) {
                 Spacer()
                 Image(systemName: icon)
-                    .font(.system(size: 24, weight: .medium))
+                    .font(.system(size: 28, weight: .medium))
                     .foregroundStyle(Color.inkColor.opacity(0.7))
-                    .frame(width: 32)
+                    .frame(width: 36)
 
-                VStack(alignment: .leading, spacing: 3) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.system(size: 17, weight: .bold, design: .rounded))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.inkColor)
                     Text(subtitle)
-                        .font(.system(size: 13, weight: .regular, design: .rounded))
+                        .font(.system(size: 15, weight: .regular, design: .rounded))
                         .foregroundStyle(Color.inkColor.opacity(0.6))
                 }
                 Spacer()
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 20)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(Color.paperWhite)
@@ -341,51 +345,34 @@ struct ContentView: View {
     // MARK: - Custom Tab Bar
 
     private var customTabBar: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 16) {
             ForEach(AppTab.allCases, id: \.rawValue) { tab in
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.15)) {
                         selectedTab = tab
                     }
                 }) {
-                    if tab == .notebook {
-                        // Center raised button
-                        ZStack {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 56, height: 56)
-                                .shadow(color: Color.black.opacity(0.1), radius: 8, y: -2)
+                    ZStack {
+                        Capsule()
+                            .fill(Color(red: 0.92, green: 0.9, blue: 0.86))
+                            .frame(height: 44)
 
-                            Image(systemName: tab.icon)
-                                .font(.system(size: 22, weight: .medium))
-                                .foregroundStyle(Color.tabBarDark)
-                        }
-                        .offset(y: -14)
-                    } else {
-                        VStack(spacing: 0) {
-                            Image(systemName: tab.icon)
-                                .font(.system(size: 20, weight: .medium))
-                                .foregroundStyle(
-                                    selectedTab == tab
-                                    ? Color.white
-                                    : Color.white.opacity(0.4)
-                                )
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                        Image(systemName: tab.icon)
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundStyle(Color.inkColor)
                     }
                 }
                 .buttonStyle(.plain)
-                .frame(maxWidth: .infinity)
             }
         }
-        .padding(.horizontal, 12)
-        .padding(.bottom, 8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 0)
-                .fill(Color.tabBarDark)
-                .ignoresSafeArea(edges: .bottom)
+            Capsule()
+                .fill(Color(red: 0.35, green: 0.35, blue: 0.35))
         )
+        .padding(.horizontal, 24)
+        .padding(.bottom, 20)
     }
 
     // MARK: - Placeholder Tab
@@ -733,5 +720,78 @@ struct ProfileView: View {
     private var userInitial: String {
         let name = userName.isEmpty ? "B" : userName
         return String(name.prefix(1)).uppercased()
+    }
+}
+
+// MARK: - Welcome View
+
+struct WelcomeView: View {
+    @Binding var isPresented: Bool
+    @Binding var hasSeenWelcome: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer().frame(height: 60)
+
+            // Logo
+            Text("nextstep")
+                .font(.system(size: 64, weight: .heavy, design: .default))
+                .foregroundColor(Color(red: 0.15, green: 0.15, blue: 0.15))
+                .tracking(-2)
+
+            Spacer()
+
+            // Illustration
+            if let uiImage = UIImage(contentsOfFile: "/Users/ayushsharma/.gemini/antigravity-ide/brain/6bb68c58-4e53-4f4c-9287-c28ef6b49319/welcome_illustration_1780641088314.png") {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxHeight: 300)
+                    .padding(.horizontal, 40)
+            } else {
+                Image(systemName: "book.pages")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .foregroundColor(.blue)
+            }
+
+            Spacer()
+
+            // Text content
+            VStack(spacing: 16) {
+                Text("Learn smarter.\nOne step at a time.")
+                    .font(.system(size: 28, weight: .bold, design: .default))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.black)
+
+                Text("An AI-powered platform that helps you learn by guiding\nyour thinking.")
+                    .font(.system(size: 16, weight: .regular, design: .default))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.black.opacity(0.8))
+                    .padding(.horizontal, 40)
+            }
+
+            Spacer().frame(height: 40)
+
+            // Get Started Button
+            Button(action: {
+                withAnimation {
+                    hasSeenWelcome = true
+                    isPresented = false
+                }
+            }) {
+                Text("Get Started")
+                    .font(.system(size: 20, weight: .medium, design: .default))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                    .background(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .clipShape(Capsule())
+            }
+            .padding(.horizontal, 32)
+            .padding(.bottom, 60)
+        }
+        .background(Color(red: 0.96, green: 0.94, blue: 0.88).ignoresSafeArea())
     }
 }
