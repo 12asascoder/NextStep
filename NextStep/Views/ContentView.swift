@@ -15,6 +15,8 @@ struct ContentView: View {
     @AppStorage("nextstep_userName") private var userName: String = ""
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome: Bool = false
     @State private var showWelcome: Bool = false
+    @State private var showAnalysis: Bool = false
+    @State private var showProfile: Bool = false
 
     private let persistence = PersistenceService.shared
 
@@ -38,10 +40,10 @@ struct ContentView: View {
                     switch selectedTab {
                     case .home:
                         homeView
-                    case .notebook:
+                    case .camera:
+                        Color.clear
+                    case .history:
                         notebookListView
-                    case .profile:
-                        ProfileView()
                     }
                 }
                 .padding(.bottom, 80) // Space for tab bar
@@ -57,6 +59,12 @@ struct ContentView: View {
             }
             .fullScreenCover(isPresented: $showWelcome) {
                 WelcomeView(isPresented: $showWelcome, hasSeenWelcome: $hasSeenWelcome)
+            }
+            .fullScreenCover(isPresented: $showAnalysis) {
+                AnalysisView()
+            }
+            .sheet(isPresented: $showProfile) {
+                ProfileView()
             }
             // Single problem destination
             .navigationDestination(for: MathProblem.self) { problem in
@@ -97,27 +105,30 @@ struct ContentView: View {
                     Spacer()
 
                     // Mascot icon (small yellow bee/character)
-                    ZStack {
-                        Circle()
-                            .fill(Color.faceYellow)
-                            .frame(width: 36, height: 36)
-                        // Simple face
-                        VStack(spacing: 2) {
-                            HStack(spacing: 4) {
-                                Circle().fill(Color.black).frame(width: 3, height: 3)
-                                Circle().fill(Color.black).frame(width: 3, height: 3)
+                    Button(action: { showProfile = true }) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.faceYellow)
+                                .frame(width: 36, height: 36)
+                            // Simple face
+                            VStack(spacing: 2) {
+                                HStack(spacing: 4) {
+                                    Circle().fill(Color.black).frame(width: 3, height: 3)
+                                    Circle().fill(Color.black).frame(width: 3, height: 3)
+                                }
+                                Path { path in
+                                    path.move(to: CGPoint(x: 0, y: 0))
+                                    path.addQuadCurve(
+                                        to: CGPoint(x: 8, y: 0),
+                                        control: CGPoint(x: 4, y: 4)
+                                    )
+                                }
+                                .stroke(Color.black, lineWidth: 1)
+                                .frame(width: 8, height: 4)
                             }
-                            Path { path in
-                                path.move(to: CGPoint(x: 0, y: 0))
-                                path.addQuadCurve(
-                                    to: CGPoint(x: 8, y: 0),
-                                    control: CGPoint(x: 4, y: 4)
-                                )
-                            }
-                            .stroke(Color.black, lineWidth: 1)
-                            .frame(width: 8, height: 4)
                         }
                     }
+                    .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 28)
                 .padding(.top, 20)
@@ -145,7 +156,7 @@ struct ContentView: View {
                         icon: "chart.line.uptrend.xyaxis",
                         title: "Weekly Analysis",
                         subtitle: "View your performance insights",
-                        action: { /* TODO: Weekly analysis */ }
+                        action: { showAnalysis = true }
                     )
                 }
                 .padding(.horizontal, 28)
@@ -348,8 +359,12 @@ struct ContentView: View {
         HStack(spacing: 16) {
             ForEach(AppTab.allCases, id: \.rawValue) { tab in
                 Button(action: {
-                    withAnimation(.easeInOut(duration: 0.15)) {
-                        selectedTab = tab
+                    if tab == .camera {
+                        showSolveNew = true
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            selectedTab = tab
+                        }
                     }
                 }) {
                     ZStack {
@@ -741,20 +756,29 @@ struct WelcomeView: View {
 
             Spacer()
 
-            // Illustration
-            if let uiImage = UIImage(contentsOfFile: "/Users/ayushsharma/.gemini/antigravity-ide/brain/6bb68c58-4e53-4f4c-9287-c28ef6b49319/welcome_illustration_1780641088314.png") {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxHeight: 300)
-                    .padding(.horizontal, 40)
-            } else {
-                Image(systemName: "book.pages")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 200)
-                    .foregroundColor(.blue)
+            // Illustration Cluster
+            ZStack {
+                // Pink bottom-left
+                circleFace(color: Color(red: 0.95, green: 0.4, blue: 0.6), size: 70, face: "glasses")
+                    .offset(x: -60, y: 30)
+
+                // Green bottom-right
+                circleFace(color: Color(red: 0.2, green: 0.8, blue: 0.6), size: 70, face: "squint")
+                    .offset(x: 70, y: 60)
+
+                // Red top-left
+                circleFace(color: Color(red: 0.95, green: 0.2, blue: 0.2), size: 90, face: "straight")
+                    .offset(x: -70, y: -40)
+
+                // Blue top-right
+                circleFace(color: Color(red: 0.2, green: 0.2, blue: 0.8), size: 100, face: "smile_closed")
+                    .offset(x: 60, y: -50)
+
+                // Yellow center
+                circleFace(color: Color(red: 0.95, green: 0.8, blue: 0.1), size: 80, face: "smile")
+                    .offset(x: 0, y: 10)
             }
+            .frame(height: 250)
 
             Spacer()
 
@@ -793,5 +817,41 @@ struct WelcomeView: View {
             .padding(.bottom, 60)
         }
         .background(Color(red: 0.96, green: 0.94, blue: 0.88).ignoresSafeArea())
+    }
+
+    private func circleFace(color: Color, size: CGFloat, face: String) -> some View {
+        ZStack {
+            Circle()
+                .fill(color)
+                .frame(width: size, height: size)
+            
+            // Draw simple faces
+            if face == "glasses" {
+                Text("oo\nᴗ")
+                    .font(.system(size: size * 0.2, weight: .bold))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.center)
+            } else if face == "squint" {
+                Text("><\n-")
+                    .font(.system(size: size * 0.25, weight: .bold))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.center)
+            } else if face == "straight" {
+                Text("• •\no")
+                    .font(.system(size: size * 0.25, weight: .bold))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.center)
+            } else if face == "smile_closed" {
+                Text("∪ ∪\nᴗ")
+                    .font(.system(size: size * 0.25, weight: .bold))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.center)
+            } else if face == "smile" {
+                Text("• •\nᴗ")
+                    .font(.system(size: size * 0.25, weight: .bold))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.center)
+            }
+        }
     }
 }

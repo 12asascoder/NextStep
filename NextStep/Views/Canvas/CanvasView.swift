@@ -490,7 +490,7 @@ struct CanvasView: View {
     // MARK: - Helpers
 
     private func formatSolutionText(_ text: String) -> String {
-        var formatted = text
+        let formatted = text
             .replacingOccurrences(of: "\\(", with: "")
             .replacingOccurrences(of: "\\)", with: "")
             .replacingOccurrences(of: "\\[", with: "")
@@ -499,7 +499,7 @@ struct CanvasView: View {
     }
 
     private func formatHintContent(_ text: String) -> String {
-        var formatted = text
+        let formatted = text
             .replacingOccurrences(of: "\\(", with: "")
             .replacingOccurrences(of: "\\)", with: "")
             .replacingOccurrences(of: "\\[", with: "")
