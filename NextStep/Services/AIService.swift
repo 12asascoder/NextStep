@@ -101,7 +101,7 @@ final class AIService {
 
     // ⚠️ Change this to your Mac's local IP if running on a real device.
     // Use "localhost" for Simulator only.
-    static let baseURL = "http://10.9.237.26:8000"
+    static let baseURL = "https://next-step-api-wl8z.onrender.com"
 
 
     private let session: URLSession = {
