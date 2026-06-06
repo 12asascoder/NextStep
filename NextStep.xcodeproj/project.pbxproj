@@ -30,7 +30,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		061B9D786DD8B1AAE701D6F1 /* NextStep.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NextStep.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		061B9D786DD8B1AAE701D6F1 /* NextStep.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NextStep.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1D1655E2664F8942A5B761 /* TextRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRecognitionService.swift; sourceTree = "<group>"; };
 		2BA3EA4CDE99360AB577AD30 /* AIHintCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHintCard.swift; sourceTree = "<group>"; };
 		2C9A73D8EBCA53D597C3FC22 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
@@ -201,6 +201,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					8A3EC34284FEFB63FDAC3F03 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -261,14 +262,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5KDGWFU93T;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = NextStep/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.nextstemainstepp.NextStep;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nextstep.NextStep;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -397,14 +398,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5KDGWFU93T;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = NextStep/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.nextstemainstepp.NextStep;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nextstep.NextStep;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
