@@ -15,7 +15,6 @@ struct CanvasView: View {
 
     // Local UI state
     @State private var isShowingAIPanel = false
-    @State private var isEditingQuestion = false
     @State private var showSubjectPicker = false
     @State private var selectedSubject: String = ""
     @State private var showAIHintCard = false
@@ -69,20 +68,6 @@ struct CanvasView: View {
                 tempCustomSubject = ""
             }
         }
-        .sheet(isPresented: $isEditingQuestion) {
-            QuestionEditView(
-                statement: viewModel.problem.statement,
-                onSave: { newText in
-                    viewModel.problem.statement = newText
-                    isEditingQuestion = false
-                },
-                onCancel: {
-                    isEditingQuestion = false
-                }
-            )
-            .presentationDetents([.medium])
-            .presentationDragIndicator(.visible)
-        }
         // AI panel is now shown inline — no sheet needed
         .onChange(of: viewModel.aiPanelHint) { newHint in
             if !newHint.isEmpty {
@@ -124,6 +109,23 @@ struct CanvasView: View {
             .buttonStyle(.plain)
 
             Spacer()
+
+            // Save Button
+            Button(action: {
+                PersistenceService.shared.saveUserProblem(viewModel.problem)
+                NotificationCenter.default.post(name: Notification.Name("didCompleteProblemNotification"), object: nil)
+            }) {
+                Text("Save")
+                    .font(.custom("Bradley Hand", size: 14))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 9)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .fill(Color.accentBlue)
+                    )
+            }
+            .buttonStyle(.plain)
 
             // Choose Subject button
             Button(action: { showSubjectPicker.toggle() }) {
@@ -207,13 +209,13 @@ struct CanvasView: View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 // Question text in handwriting style
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Question statement — distinct shade background
+                VStack(alignment: .leading, spacing: 0) {
+                    // Question statement — distinct shade background
                         VStack(alignment: .leading, spacing: 0) {
-                            Text(viewModel.problem.statement.isEmpty ? "Write your question here…" : viewModel.problem.statement)
+                            TextField("Write your question here...", text: $viewModel.problem.statement, axis: .vertical)
                                 .font(.custom("Bradley Hand", size: 19))
-                                .foregroundStyle(viewModel.problem.statement.isEmpty ? Color.inkColor.opacity(0.35) : Color.inkColor)
+                                .foregroundStyle(Color.inkColor)
+                                .tint(Color.accentBlue)
                                 .lineSpacing(6)
                                 .padding(.vertical, 20)
                                 .padding(.horizontal, 24)
@@ -257,10 +259,8 @@ struct CanvasView: View {
                                 viewModel.updateSolutionData(data)
                             }
                         )
-                        .frame(maxWidth: .infinity)
-                        .frame(minHeight: 500)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
@@ -527,46 +527,4 @@ struct CanvasView: View {
     }
 }
 
-// MARK: - Inline Question Editor
 
-/// Sheet for editing the question text directly.
-struct QuestionEditView: View {
-    @State var statement: String
-    var onSave: (String) -> Void
-    var onCancel: () -> Void
-
-    var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Button("Cancel") { onCancel() }
-                    .foregroundStyle(Color.textSecondary)
-                Spacer()
-                Text("Edit Question")
-                    .font(.custom("Bradley Hand", size: 18))
-                    .foregroundStyle(Color.textPrimary)
-                Spacer()
-                Button("Save") {
-                    onSave(statement)
-                }
-                .font(.custom("Bradley Hand", size: 16))
-                .foregroundStyle(Color.accentBlue)
-                .disabled(statement.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 20)
-
-            TextEditor(text: $statement)
-                .font(.custom("Bradley Hand", size: 20))
-                .padding(12)
-                .background(Color(UIColor.secondarySystemBackground))
-                .cornerRadius(12)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.blockBorder, lineWidth: 1)
-                )
-                .padding(.horizontal, 24)
-                .padding(.bottom, 16)
-        }
-        .background(Color.paperCard.ignoresSafeArea())
-    }
-}

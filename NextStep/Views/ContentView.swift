@@ -78,6 +78,16 @@ struct ContentView: View {
                     }
                 )
             }
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("didCompleteProblemNotification"))) { _ in
+                if !navigationPath.isEmpty {
+                    navigationPath.removeLast(navigationPath.count)
+                }
+                selectedTab = .history
+                userProblems = persistence.loadUserProblems()
+            }
+            .onAppear {
+                userProblems = persistence.loadUserProblems()
+            }
         }
     }
 

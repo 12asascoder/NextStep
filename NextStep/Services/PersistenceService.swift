@@ -5,6 +5,7 @@ final class PersistenceService {
     
     private let defaults = UserDefaults.standard
     private let sessionsKey = "nextStep_savedSessions"
+    private let problemsKey = "nextStep_savedProblems"
     private let streakKey   = "nextStep_streakDays"
     private let lastUsedKey = "nextStep_lastUsedDate"
     private let studyTimeKey = "nextStep_studyTimeSeconds"
@@ -39,8 +40,32 @@ final class PersistenceService {
         return loadAllSessions().first(where: { $0.problemID == problemID })
     }
     
+    // MARK: - User Problems
+    
+    func saveUserProblem(_ problem: MathProblem) {
+        var allProblems = loadUserProblems()
+        if let idx = allProblems.firstIndex(where: { $0.id == problem.id }) {
+            allProblems[idx] = problem
+        } else {
+            allProblems.append(problem)
+        }
+        
+        if let encoded = try? JSONEncoder().encode(allProblems) {
+            defaults.set(encoded, forKey: problemsKey)
+        }
+    }
+    
+    func loadUserProblems() -> [MathProblem] {
+        guard let data = defaults.data(forKey: problemsKey),
+              let problems = try? JSONDecoder().decode([MathProblem].self, from: data) else {
+            return []
+        }
+        return problems
+    }
+    
     func clearAll() {
         defaults.removeObject(forKey: sessionsKey)
+        defaults.removeObject(forKey: problemsKey)
         defaults.removeObject(forKey: streakKey)
         defaults.removeObject(forKey: lastUsedKey)
         defaults.removeObject(forKey: studyTimeKey)
