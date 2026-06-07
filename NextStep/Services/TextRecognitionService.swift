@@ -87,6 +87,10 @@ final class TextRecognitionService {
                     continuation.resume(returning: sorted)
                 }
 
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = false
+                request.customWords = ["+", "-", "=", "/", "*", "^", "sin", "cos", "tan", "log", "ln", "lim", "x", "y", "z", "f(x)", "g(x)", "a", "b", "c", "n"]
+
                 let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
                 do {
                     try handler.perform([request])
@@ -196,6 +200,7 @@ final class TextRecognitionService {
                 
                 request.recognitionLevel = .accurate
                 request.usesLanguageCorrection = false
+                request.customWords = ["+", "-", "=", "/", "*", "^", "sin", "cos", "tan", "log", "ln", "lim", "x", "y", "z", "f(x)", "g(x)", "a", "b", "c", "n"]
                 
                 // Typical document scans might have orientation, but VNImageRequestHandler can infer if we pass it,
                 // or we just rely on standard orientation.
